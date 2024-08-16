@@ -1,8 +1,12 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../Modals/User/UserModal");
+const channelModel =require("../Modals/Channel/ChannelModal")
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
+var nodemailer = require('nodemailer');
 import { Request, Response, NextFunction } from 'express';
+import { nextTick } from 'process';
+import { CorrectHandler, ErrorHandler, NodeMailer, UndefinedHandler } from '../Utilities/utilites';
 dotenv.config();
 
 interface AuthenticatedRequest extends Request {
@@ -14,13 +18,11 @@ const Authentication = async (req: AuthenticatedRequest, res: Response, next: Ne
   const authtoken = my_token;
 
   if (!authtoken) {
-    return res.status(500).json({
-      message: "User not logged in yet",
-      UserLogged: false,
-    });
+    return next(UndefinedHandler(res,"User not logged in yet",500))
   }
 
   try {
+    //typecasting process.env.SECRET to string
     const decoded = jwt.verify(authtoken, process.env.SECRET as string);
     console.log(decoded);
 
@@ -28,42 +30,35 @@ const Authentication = async (req: AuthenticatedRequest, res: Response, next: Ne
     console.log(req.user);
     next();
   } catch (err) {
-    return res.status(401).json({
-      message: "Invalid or expired token",
-      UserLogged: false,
-    });
+    return next(ErrorHandler(res,"Invalid or expired token",401))
   }
 };
 
-const UserRegister = async (req: Request, res: Response) => {
+const UserRegister = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { username, fullname, email, password } = req.body;
     const result = await userModel.create({ username, fullname, email, password });
+    NodeMailer("prasannasamadhiya02@gmail.com",result.email,"Account Created","Great to have you onboard on our software")
     res.status(201).json(result);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Server Error" });
+    next(UndefinedHandler(res,"Server Error",500));
   }
 };
 
-const UserLogin = async (req: Request, res: Response) => {
+const UserLogin = async (req: Request, res: Response,next:NextFunction) => {
   try {
     const { email, password } = req.body;
     const result = await userModel.findOne({ email });
 
     if (!result) {
-      return res.status(401).json({
-        message: "User not found",
-        LoggedIn: "failed",
-      });
+      return next(ErrorHandler(res,"User not found",401))
     }
 
     const match = await bcrypt.compare(password, result.password);
 
     if (!match) {
-      return res.status(401).json({
-        message: "Incorrect password",
-      });
+      return next(ErrorHandler(res,"Incorrect password",401))
     }
 
     const payload = {
@@ -82,7 +77,7 @@ const UserLogin = async (req: Request, res: Response) => {
       });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Server Error" });
+    next(UndefinedHandler(res,"Server Error",500));
   }
 };
 
@@ -91,16 +86,42 @@ const GetAllUsers = async (req: Request, res: Response) => {
     const result = await userModel.find();
 
     if (!result || result.length === 0) {
-      return res.status(404).json({
-        message: "No users found",
-      });
+      return ErrorHandler(res,"No users found",401);
     }
 
-    res.status(200).json(result);
+    return res.status(200).json(result);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Server Error" });
+    return UndefinedHandler(res,"Server Error",500);
   }
 };
 
-module.exports = { UserRegister, UserLogin, GetAllUsers, Authentication };
+const DeleteUser=async(req:Request,res:Response)=>{
+  try{
+    const {userid}=req.params 
+    if(!userid){
+      return ErrorHandler(res,"User id not available",401);
+    }
+    const user=await userModel.findById(userid)
+    if(!user){
+      return ErrorHandler(res,"User not found",401);
+    }
+    user.channels.map(async(ele:string,index:Number,arr:string[])=>{
+        const deletedchannel=await channelModel.findByIdAndDelete(ele)
+    })
+    const deleteduser=await userModel.findByIdAndDelete(userid)
+   
+    NodeMailer("prasannasamadhiya02@gmail.com",user.email,"Account Deleted","Said to say you goodbye,hope you will join soon")
+
+    res.status(201).json({
+      success:true,
+      message:"User deleted",
+      deleteduser
+    })
+  }catch(err){
+    console.log(err);
+    ErrorHandler(res,"Server Error",500);
+  }
+}
+
+module.exports = { UserRegister, UserLogin, GetAllUsers, Authentication ,DeleteUser};

@@ -1,8 +1,11 @@
 const channelModel = require('../Modals/Channel/ChannelModal');
 const userModel = require('../Modals/User/UserModal');
 const { UndefinedHandler, ErrorHandler, CorrectHandler } = require('../Utilities/utilites');
+// importing types from @types/express 
 import { Request, Response, NextFunction } from 'express';
+import { NodeMailer } from '../Utilities/utilites';
 
+//creating a interface to add the req.user which is not possible at Request type
 interface AuthenticatedRequest extends Request {
   user?: any;
 }
@@ -11,20 +14,14 @@ const CreateChannel = async (req: AuthenticatedRequest, res: Response) => {
   const user = req.user;
   
   if (!user) {
-    return res.status(401).json({
-      success: false,
-      message: "Not logged in yet",
-    });
+    return ErrorHandler(res,"Not logged in yet",401);
   }
 
   const authUser = await userModel.findById(user._id);
   const { name, description } = req.body;
 
   if (!name) {
-    return res.status(400).json({
-      success: false,
-      message: "Channel Name is required!!!",
-    });
+    return ErrorHandler(res,"Channel Name is required",400);
   }
 
   const NewChannel = await channelModel.create({
@@ -34,13 +31,11 @@ const CreateChannel = async (req: AuthenticatedRequest, res: Response) => {
   });
 
   if (!NewChannel) {
-    return res.status(400).json({
-      success: false,
-      message: "Channel could not be created",
-    });
+    return ErrorHandler(res,"channel could not be created")
   }
 
-  // Applying data association between channel and user model
+  NodeMailer("prasannasamadhiya02@gmail.com",NewChannel.email,"Channel Created",`Your channel ${NewChannel.name} was created`) 
+
   authUser.channels.push(NewChannel._id);
   await authUser.save();
 
@@ -58,48 +53,30 @@ const deleteChannel = async (req: AuthenticatedRequest, res: Response, next: Nex
     const loggedInUser = req.user;
 
     if (!loggedInUser) {
-      return res.status(402).json({
-        success: false,
-        message: "Unauthorized Access Denied",
-      });
+      return ErrorHandler(res,"Unauthorized Access Denied",402);
     }
 
     if (!channelId) {
-      return res.status(404).json({
-        success: false,
-        message: "ChannelId not provided",
-      });
+      return ErrorHandler(res,"channelId not provided",401);
     }
 
     const channelToDelete = await channelModel.findById(channelId);
     console.log(channelToDelete)
     if (!channelToDelete) {
-      return res.status(404).json({
-        success: false,
-        message: "Channel not found",
-      });
+      return ErrorHandler(res,"channel not found");
     }
 
     // Check the userId and ownerId of the channel
     if (loggedInUser._id.toString() !== channelToDelete.createdBy.toString()) {
-      return res.status(402).json({
-        success: false,
-        message: "You can only delete your Channel(s)",
-      });
+      return ErrorHandler(res,"You can only delete your Channel",402);
     }
 
     if (!userTypedName) {
-      return res.status(404).json({
-        success: false,
-        message: "Please type the channel name to confirm!!!",
-      });
+      return ErrorHandler(res,"type the channel name to confirm",401);
     }
 
     if (userTypedName.toString() !== channelToDelete.name.toString()) {
-      return res.status(400).json({
-        success: false,
-        message: "Check the channel name you have typed!!!",
-      });
+      return ErrorHandler(res,"Check the channel name you have typed",400);
     }
 
     const index = loggedInUser.channels.findIndex(
@@ -114,11 +91,10 @@ const deleteChannel = async (req: AuthenticatedRequest, res: Response, next: Nex
     const deletedChannel = await channelModel.findByIdAndDelete(channelId);
 
     if (!deletedChannel) {
-      return res.status(400).json({
-        success: false,
-        message: "Channel could not be deleted!!!",
-      });
+      return ErrorHandler(res,"channel could not be deleted",400);
     }
+    
+    NodeMailer("prasannasamadhiya02@gmail.com",loggedInUser.email,"Channel Deleted",`Your channel ${deletedChannel.name} was deleted`)
 
     return res.status(201).json({
       success: true,
@@ -127,11 +103,62 @@ const deleteChannel = async (req: AuthenticatedRequest, res: Response, next: Nex
     });
   } catch (error: any) {
     console.log("hi")
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return UndefinedHandler(res,error.message,500);
   }
 };
 
-module.exports = { CreateChannel, deleteChannel };
+const UpdateChannel=async(req:AuthenticatedRequest,res:Response,next:NextFunction)=>{
+  try {
+    const {channelId} = req.params
+    const loggedInUser = req.user
+         
+    if (!loggedInUser){
+          return ErrorHandler(res,"User not logged in",402);
+         }
+
+
+    const channelToUpdate = await channelModel.findById(channelId)
+    if(!channelToUpdate){
+          return ErrorHandler(res,"Channel not found",401);
+
+         }
+
+        //   The user who is updating the channel and the owner of the channel must be same :-
+
+    if(loggedInUser._id.toString() !== channelToUpdate.createdBy.toString()){
+            return ErrorHandler(res,"You can only update your channel details",402);
+         }
+
+    const updatedChannel = await channelModel.findByIdAndUpdate(channelId , {...req.body} , {new : true})
+
+    if (!updatedChannel) {
+            return ErrorHandler(res,"Channel could not get updated",400);
+         }
+
+    return  res.status (202).json ({
+        success : true,
+        message : "Channel got updated successfully ",
+        updatedChannel
+       })
+
+} catch (error) {
+    UndefinedHandler(res,"Some unidentified problems",500);
+  }
+};
+
+const GetAllchannels=async(req:Request,res:Response,next:NextFunction)=>{
+  
+    const channels=await channelModel.find();
+
+    if (!channels || channels.length === 0) {
+      return ErrorHandler(res,"No users found",401);
+    }
+
+    res.status(201).json({
+      success:true,
+      channels
+    })
+  
+}
+
+module.exports = { CreateChannel, deleteChannel ,UpdateChannel,GetAllchannels};
