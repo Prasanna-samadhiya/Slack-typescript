@@ -1,5 +1,8 @@
 const nodemailer=require("nodemailer")
 import { Response } from 'express';
+const dotenv=require("dotenv")
+
+dotenv.config();
 
 const CorrectHandler = (res: Response, message: string, statuscode: number) => {
     return res.status(statuscode).json({
@@ -26,8 +29,8 @@ const NodeMailer=(from:string,to:string,subject:string,text:string)=>{
     var transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: 'prasannasamadhiya02@gmail.com',
-          pass: 'wwqq gyva xrri hvcn'
+          user: process.env.USER as string ,
+          pass: process.env.PASS as string
         }
       });
       
