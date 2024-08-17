@@ -1,36 +1,39 @@
-import mongoose from "mongoose";
-import { Schema, Document } from "mongoose";
+import { Schema, model, Document } from 'mongoose';
 
-// Define the interface for the Message document
-interface IMessage extends mongoose.Document {
-    text: string;
-    channel: mongoose.Types.ObjectId;
-    sender: mongoose.Types.ObjectId;
-    createdAt: Date;
+interface IMessage extends Document {
+  sender: Schema.Types.ObjectId; //  sender
+  receiver: Schema.Types.ObjectId; // User ID (for DM) or Channel ID (for normal messaging)
+  content: string;
+  timestamp: Date;
+  isDM: boolean; //  indicate if it's a DM or normal message
 }
 
-// Define the Message schema
-const MessageSchema = new mongoose.Schema<IMessage>({
-    text: {
-        type: String,
-        required: true,
+// Define the schema
+const messageSchema = new Schema<IMessage>({
+  sender: {
+     type: Schema.Types.ObjectId, 
+     ref: 'User', 
+     required: true 
     },
-    channel: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Channel',
-        required: true,
+  receiver: { 
+    type: Schema.Types.ObjectId, 
+    ref: 'User', 
+    required: true 
+    }, // or Channel depending on the message type
+  content: { 
+    type: String, 
+    required: true 
     },
-    sender: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
+  timestamp: { 
+    type: Date, 
+    default: Date.now
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
+  isDM: {
+    type: Boolean, 
+    required: true },
 });
 
-// Create and export the Message model
-const Message = mongoose.model<IMessage>('Message', MessageSchema);
-module.exports = Message;
+const Message = model<IMessage>('Message', messageSchema);
+
+export default Message;
+
