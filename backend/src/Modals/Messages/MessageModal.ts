@@ -1,4 +1,5 @@
 import { Schema, model, Document } from 'mongoose';
+const mongoose=require('mongoose')
 
 interface IMessage extends Document {
   sender: Schema.Types.ObjectId; //  sender
@@ -33,7 +34,18 @@ const messageSchema = new Schema<IMessage>({
     required: true },
 });
 
+messageSchema.pre('save', function (next) {
+  if (typeof this.sender === 'string') {
+    this.sender = new mongoose.Types.ObjectId(this.sender);
+  }
+  if (typeof this.receiver === 'string') {
+    this.receiver = new mongoose.Types.ObjectId(this.receiver);
+  }
+  next();
+});
+
 const Message = model<IMessage>('Message', messageSchema);
+
 
 export default Message;
 
