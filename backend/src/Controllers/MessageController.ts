@@ -1,16 +1,15 @@
 import express, { Application, Request, Response } from 'express';
 import http from 'http';
-import { Server, Socket } from 'socket.io';
+import WebSocket from 'ws';
 import mongoose from 'mongoose';
 import Message from '../Modals/Messages/MessageModal'; // Import your Message model
 
 const app: Application = express();
-const server = http.createServer(app);
-const io = new Server(server);
+
 
 
 // Controller to create a new message
-const createMessage = (io: Server) => async (req: Request, res: Response) => {
+const createMessage = (wss: WebSocket.Server) => async (req: Request, res: Response) => {
   try {
     const { sender, receiver, content, isDM } = req.body;
 
@@ -30,8 +29,12 @@ const createMessage = (io: Server) => async (req: Request, res: Response) => {
 
     const savedMessage = await message.save();
     
-    // Emit the message to the receiver's room via Socket.IO
-    io.to(receiver).emit('receiveMessage', savedMessage);
+    // Broadcast the new message to all connected clients
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({ type: 'newMessage', data: savedMessage }));
+      }
+    });
 
     res.status(201).json(savedMessage);
   } catch (error:any) {
@@ -61,7 +64,7 @@ const fetchMessages = async (req: Request, res: Response) => {
   }
 };
 
-const deleteMessage = async (req: Request, res: Response) => {
+const deleteMessage = (wss: WebSocket.Server)=>async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -76,6 +79,13 @@ const deleteMessage = async (req: Request, res: Response) => {
     if (!result) {
       return res.status(404).json({ error: 'Message not found' });
     }
+
+    // Broadcast the deletion to all connected clients
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({ type: 'deleteMessage', data: { id } }));
+      }
+    });
 
     res.status(200).json({ message: 'Message deleted successfully' });
   } catch (error) {

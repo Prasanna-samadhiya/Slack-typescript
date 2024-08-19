@@ -1,11 +1,11 @@
 const express=require("express")
 const { fetchMessages ,createMessage,deleteMessage} = require("../Controllers/MessageController")
-import { Server } from 'socket.io';
+import WebSocket from 'ws';
 
 const router=express.Router()
-module.exports = function(io:Server) {
+module.exports = function(wss: WebSocket.Server) {
     // Route to create a new message
-    router.post('/createMessage', createMessage(io));
+    router.post('/createMessage', createMessage(wss));
   
     // Route to fetch messages
     router.get('/fetchMessages', fetchMessages);
