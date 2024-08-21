@@ -12,7 +12,7 @@ interface AuthenticatedRequest extends Request {
 
 const CreateChannel = async (req: AuthenticatedRequest, res: Response) => {
   const user = req.user;
-  
+  console.log("user:",user)
   if (!user) {
     return ErrorHandler(res,"Not logged in yet",401);
   }
@@ -34,7 +34,7 @@ const CreateChannel = async (req: AuthenticatedRequest, res: Response) => {
     return ErrorHandler(res,"channel could not be created")
   }
 
-  NodeMailer("prasannasamadhiya02@gmail.com",NewChannel.email,"Channel Created",`Your channel ${NewChannel.name} was created`) 
+  NodeMailer("prasannasamadhiya02@gmail.com",authUser.email,"Channel Created",`Your channel ${NewChannel.name} was created`) 
 
   authUser.channels.push(NewChannel._id);
   await authUser.save();

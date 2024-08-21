@@ -9,11 +9,12 @@ interface IInvite extends Document {
 }
 
 const inviteSchema = new Schema<IInvite>({
-  email: { type: String, required: true },
+  email: { type: String },
   token: { type: String, required: true },
   role: { type: String, required: true },
   channelid:{type:mongoose.Schema.Types.ObjectId, required: true},
-  expiresAt: { type: Date, required: true }
+  expiresAt: { type: Date, required: true },
+  channelname:{ type:String }
 });
 
 const Invite = model<IInvite>('Invite', inviteSchema);

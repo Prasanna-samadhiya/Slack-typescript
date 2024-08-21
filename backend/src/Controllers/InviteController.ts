@@ -23,7 +23,7 @@ interface IInvite extends Document {
 const sendInviteEmail = async (inviteeEmail: string, token: string): Promise<void> => {
   //creating link for the sharing in local
   try{
-  const inviteLink = `http://localhost:5000/invite/sendinguserinvite/token=${token}`;
+  const inviteLink = `http://localhost:5173/registerfrominvite?token=${token}`;
   
   const invite = await Invite.findOne({ token })
   const channel = await channelModel.findById(invite.channelid)
@@ -89,17 +89,20 @@ const verifyInviteToken = async (token: string): Promise<IInvite | null> => {
   };
   
 const SendingUserInvite =async(req:Request,res:Response,next:NextFunction)=>{
-    const {InviteEmail,role,channelid}=req.body;
+    const {InviteEmail}=req.body;
+    const {id} =req.params;
     
     const inviteToken = uuidv4(); // This is the token
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); 
-    
+    const channel = await channelModel.findById(id)
+
     const invite = new Invite({
       email: InviteEmail,
       token: inviteToken,
-      role,
-      channelid:channelid,
+      role:"User",
+      channelid:id,
       expiresAt,
+      channelname:channel?.name
     });
   
     await invite.save();
@@ -121,13 +124,24 @@ const RegisterUserWithInvite = async (req: Request, res: Response): Promise<void
     const invite = await verifyInviteToken(token as string);
     console.log(invite)
     // Register the user
+    const channel = await channelModel.findById(invite?.channelid)
+    console.log(channel)
     await registerUser(token as string, { username, email: invite?.email, password });
 
-    res.status(200).json({success:true, message: 'User registered successfully' });
+    res.status(200).json({success:true, message: 'User registered successfully' ,channel});
   } catch (error:any) {
     res.status(400).json({ success:false, message: error.message });
   }
 };
 
+const getAllInvites=async(req:Request,res:Response,next:NextFunction)=>{
+     try{
+        const result=await Invite.find()
+        res.status(201).json({success:true,message:"invites feetched successfully",result})
+     }catch(err){
+        res.status(500).json({success:false,message:"unidentified error"})
+     }
+}
 
-module.exports={SendingUserInvite,RegisterUserWithInvite}
+
+module.exports={SendingUserInvite,RegisterUserWithInvite,getAllInvites}

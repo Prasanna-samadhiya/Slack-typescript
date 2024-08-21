@@ -16,30 +16,32 @@ interface AuthenticatedRequest extends Request {
 const Authentication = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   const { my_token } = req.cookies;
   const authtoken = my_token;
-
+  console.log("token:",authtoken)
   if (!authtoken) {
-    return next(UndefinedHandler(res,"User not logged in yet",500))
+    return next(UndefinedHandler(res,"User not logged in yet",401))
   }
 
   try {
     //typecasting process.env.SECRET to string
-    const decoded = jwt.verify(authtoken, process.env.SECRET as string);
+    const decoded = jwt.verify(authtoken, "prasanna");
     console.log(decoded);
 
     req.user = await userModel.findById(decoded.id);
-    console.log(req.user);
+    console.log("user:",req.user);
     next();
   } catch (err) {
-    return next(ErrorHandler(res,"Invalid or expired token",401))
+    return next(ErrorHandler(res,"Invalid or expired token",500))
   }
 };
 
-const UserRegister = async (req: Request, res: Response,next:NextFunction) => {
+const UserRegister = async (req: AuthenticatedRequest, res: Response,next:NextFunction) => {
   try {
     const { username, fullname, email, password } = req.body;
     const result = await userModel.create({ username, fullname, email, password });
     NodeMailer("prasannasamadhiya02@gmail.com",result.email,"Account Created","Great to have you onboard on our software")
-    res.status(201).json(result);
+    req.user=result
+    console.log(req.user)
+    return res.status(201).json({message:"Registered successfully",result})
   } catch (err) {
     console.log(err);
     next(UndefinedHandler(res,"Server Error",500));

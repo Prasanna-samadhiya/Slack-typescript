@@ -1,30 +1,45 @@
+//exploring type from express for app
 import { Application } from "express"
+//importing websocket
 import WebSocket, { Server as WebSocketServer } from 'ws';
 
 const express=require("express")
+//requiring different routers
 const Messagerouter=require("./Routes/MessageRoute")
 const Userrouter=require("./Routes/UserRoute")
 const Channelrouter=require("./Routes/ChannelRoute")
 const Inviterouter=require("./Routes/InviteRoutes")
-const mongoose=require("mongoose")
+
 const dotenv=require("dotenv")
 const cors=require("cors")
-const http=require('http')
+
 const cookieParser=require("cookie-parser")
 const DBconnect = require("./Config/Config")
 
+const http=require('http')
 const app: Application = express();
 const server = http.createServer(app);
-const wss = new WebSocketServer({ server });
+const wss = new WebSocketServer({ server:server });
+
 dotenv.config()
+
+app.use(cors({
+  origin : ["http://localhost:5173"],
+  credentials : true
+}))
+
 app.use(express.json())
 app.use(cookieParser())
+
+//using the database connection fuction
 DBconnect()
+
 app.use("/user",Userrouter)
 app.use("/channel",Channelrouter)
 app.use("/invite",Inviterouter)
 app.use("/message",Messagerouter(wss))
 
+//starting the websocket connection
 wss.on('connection', (ws) => {
     console.log('A user connected');
   
