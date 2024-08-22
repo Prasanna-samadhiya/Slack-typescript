@@ -69,9 +69,9 @@ function CreateWorkspace() {
                         onChange={handleChange}
                     />
                 </div>
-                <div className='text-red-600'>
+                {isempty?<div className='text-red-600'>
                     Both fields are required
-                </div>
+                </div>:<div></div>}
                 <button
                     onClick={handleSubmit}
                     className="w-full py-3 text-white bg-violet-950 rounded-lg hover:bg-blue-700"

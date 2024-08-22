@@ -5,20 +5,35 @@ import { useNavigate, useLocation } from "react-router-dom";
 const Registerfrominvite = () => {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [channelname, setchannelname] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  // This object represents the current URL and is immutable.
   const location = useLocation();
-
+  // defines utility methods to work with the query string of a URL.
   const query = new URLSearchParams(location.search);
+  // Returns the first value associated to the given search parameter.
   const token = query.get("token");
 
   useEffect(() => {
+    //to check if the token is present or not
     if (!token) {
       setError("Invalid or missing invite token");
     }
+    //getting all invites to display the particular invite that the user has
     const GetInvites=async()=>{
+        //calling a api to get the workspace name
         axios.get("http://localhost:5000/invite/getinvites").then((result) => {
-            console.log(result.data.result)
+            result.data.result.map(
+              (ele:any)=>{
+                //checking if the token which is in the url is same or not 
+                if(token==ele.token){
+                  setchannelname(ele.channelname)
+                }else{
+                //optional only for testing
+                  console.log("ele token not matched")
+                }
+              })
         }).catch((err) => {
             console.log(err)
         });
@@ -34,7 +49,8 @@ const Registerfrominvite = () => {
     }
 
     try {
-      const response = await axios.post(
+      //api call to registr the user with an invite
+      const response:any = await axios.post(
         "http://localhost:5000/invite/RegisterUserWithInvite",
         { username, password },
         {
@@ -51,7 +67,8 @@ const Registerfrominvite = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
+    <div className="flex justify-center items-center h-screen bg-gray-100 flex-col relative ">
+      <div className="absolute left-0 top-0  4 w-full h-[150px] text-5xl bg-violet-950 text-slate-200 py-14">Welcome to {channelname}!!!</div>
       <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-md">
         <h1 className="text-3xl font-bold text-center">Register with Invite</h1>
         {error && <p className="text-red-600 text-center">{error}</p>}

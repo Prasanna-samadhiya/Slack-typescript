@@ -11,7 +11,7 @@ const app: Application = express();
 // Controller to create a new message
 const createMessage = (wss: WebSocket.Server) => async (req: Request, res: Response) => {
   try {
-    const { sender, receiver, content, isDM } = req.body;
+    const { sender, receiver, content, isDM ,isPrivate} = req.body;
 
     // Validate request data
     if (!sender || !receiver || !content) {
@@ -25,6 +25,7 @@ const createMessage = (wss: WebSocket.Server) => async (req: Request, res: Respo
       receiver,
       content,
       isDM,
+      isPrivate
     });
 
     const savedMessage = await message.save();

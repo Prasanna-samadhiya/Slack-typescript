@@ -8,6 +8,9 @@ interface IUser extends mongoose.Document {
     email: string;
     password: string;
     channels: mongoose.Types.ObjectId[];
+    generalcreated: string[];
+    privatecreated: string[];
+    DM: string[];
     avatar?: string;
     status?: string;
     createdAt: Date;
@@ -34,6 +37,23 @@ const UserSchema = new mongoose.Schema<IUser>({
             ref: 'Channel',
         },
     ],
+    generalcreated:[ {
+
+            type: String,
+            unique: true
+        }
+    ],
+    privatecreated:[ {
+
+        type: String,
+        unique: true
+
+        }
+    ],
+    DM:[{
+        type: String
+    }]
+    ,
     avatar: {
         type: String,
     },
@@ -56,7 +76,7 @@ UserSchema.pre<IUser>('save', async function (next) {
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
         next();
-    } catch (error) {
+    } catch (error:any) {
         next(error);
     }
 });

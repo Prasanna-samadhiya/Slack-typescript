@@ -6,6 +6,7 @@ interface IInvite extends Document {
   role: string;
   channelid: mongoose.Types.ObjectId;
   expiresAt: Date;
+  channelname: string;
 }
 
 const inviteSchema = new Schema<IInvite>({

@@ -7,6 +7,7 @@ interface IMessage extends Document {
   content: string;
   timestamp: Date;
   isDM: boolean; //  indicate if it's a DM or normal message
+  isPrivate: boolean;// indicate if it beongs to a private chat
 }
 
 // Define the schema
@@ -31,7 +32,12 @@ const messageSchema = new Schema<IMessage>({
     },
   isDM: {
     type: Boolean, 
-    required: true },
+    required: true 
+  },
+  isPrivate: {
+    type: Boolean, 
+    required: true 
+  }
 });
 
 messageSchema.pre('save', function (next) {

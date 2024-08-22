@@ -9,6 +9,7 @@ import Register2 from './pages/Register2'
 import Registerfrominvite from './pages/RegisterFromInvite'
 import SendInvite from './pages/SendInvite'
 import SignedHome from './pages/SignedHome'
+import WorkspaceHome from './pages/WorkspaceHome'
 
 function App() {
   
@@ -21,9 +22,10 @@ function App() {
         <Route path="/signedinhome" element={<SignedHome/>}></Route>
         <Route path="/register" element={<Register/>}></Route>
         <Route path="/register2" element={<Register2/>}></Route>
-        <Route path="createworkspace" element={<CreateWorkspace/>}></Route>
-        <Route path="login" element={<Login/>}></Route>
-        <Route path="registerfrominvite" element={<Registerfrominvite/>}></Route>
+        <Route path="/createworkspace" element={<CreateWorkspace/>}></Route>
+        <Route path="/login" element={<Login/>}></Route>
+        <Route path="/registerfrominvite" element={<Registerfrominvite/>}></Route>
+        <Route path="/workspacehome" element={<WorkspaceHome/>}></Route>
       </Routes>
     </>
   )

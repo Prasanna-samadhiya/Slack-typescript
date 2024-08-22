@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 
+//interface of the workspace creates
 interface Workspace {
   name: string;
   description: string;
+  //channel here signifies chats
   channels: string[];
+  _id: string;
 }
 
 function SendInvite() {
+  //array of all workspaces
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  //the workspace the user has selected
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
+  //holds the invite email
   const [inviteEmail, setInviteEmail] = useState<string>("");
   const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch workspaces from the backend
-    
     axios.get("http://localhost:5000/channel/allchannels", { withCredentials: true })
       .then((response) => {
         console.log(response.data.channels)
@@ -35,7 +40,7 @@ function SendInvite() {
   const handleInvite = () => {
     console.log(selectedWorkspace?._id)
     if (inviteEmail) {
-      
+      //sending the invite to the email given
       axios.post(`http://localhost:5000/invite/sendinguserinvite/${selectedWorkspace?._id}`, { InviteEmail: inviteEmail }, { withCredentials: true })
         .then(() => {
           alert(`Invitation sent to ${inviteEmail}`);
@@ -83,11 +88,15 @@ function SendInvite() {
             <div className="mb-8">
               <h3 className="text-2xl font-semibold">Channels</h3>
               <ul className="mt-2">
-                {/* {selectedWorkspace.channels.map((channel, index) => (
-                  <li key={index} className="p-2 bg-white rounded-lg mb-2">
+                {/*
+                   //optional getting all the general chats
+                   {selectedWorkspace.channels.map((channel, index) => (
+                   <li key={index} className="p-2 bg-white rounded-lg mb-2">
                     {channel}
-                  </li>
-                ))} */}
+                   </li>
+                  ))} 
+                 */
+                }
               </ul>
             </div>
 
