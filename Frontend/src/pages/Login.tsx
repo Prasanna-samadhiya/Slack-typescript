@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios"
+import { useDispatch } from "react-redux";
+import { loggedinSuccess } from "../Redux/Reducers/UserReducer/UserReducer";
 
 interface LoginFormData {
     email: string;
@@ -15,6 +17,7 @@ function Login() {
     const [isequal,setisequal]=useState<Boolean>(false)
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     useEffect(()=>{
        if(!formData.email||!formData.password){
@@ -38,6 +41,7 @@ function Login() {
             console.log(formData);
             await axios.post("http://localhost:5000/user/login",formData,{withCredentials: true}).then((result:any) => {
                 console.log(result)
+                dispatch(loggedinSuccess({name:result.data.user.username,email:result.data.user.email}))
                 navigate("/createworkspace"); 
                 } ).catch((err:any) => {
                 console.log(err)

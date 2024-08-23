@@ -8,6 +8,7 @@ interface IUser extends mongoose.Document {
     email: string;
     password: string;
     channels: mongoose.Types.ObjectId[];
+    partof: mongoose.Types.ObjectId[];
     generalcreated: string[];
     privatecreated: string[];
     DM: string[];
@@ -37,16 +38,21 @@ const UserSchema = new mongoose.Schema<IUser>({
             ref: 'Channel',
         },
     ],
+    partof: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Channel',
+        },
+    ]
+    ,
     generalcreated:[ {
 
-            type: String,
-            unique: true
+            type: String
         }
     ],
     privatecreated:[ {
 
-        type: String,
-        unique: true
+        type: String
 
         }
     ],

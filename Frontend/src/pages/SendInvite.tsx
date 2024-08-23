@@ -1,15 +1,23 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate} from "react-router-dom";
+import Footer from "../CreatedComponents/Footer/Footer";
+import { useDispatch } from "react-redux";
+import { Workspaceselected } from "../Redux/Reducers/WorkspaceReducer/WorkspaceReducer";
 
 //interface of the workspace creates
 interface Workspace {
   name: string;
   description: string;
+  createdByname: string;
+  member: string[];
+  genchats: string[];
   //channel here signifies chats
+  pchats: string[];
   channels: string[];
   _id: string;
 }
+
 
 function SendInvite() {
   //array of all workspaces
@@ -18,7 +26,9 @@ function SendInvite() {
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
   //holds the invite email
   const [inviteEmail, setInviteEmail] = useState<string>("");
+  const dispatch=useDispatch()
   const navigate = useNavigate();
+  
 
   useEffect(() => {
     // Fetch workspaces from the backend
@@ -38,7 +48,7 @@ function SendInvite() {
   }, [navigate]);
 
   const handleInvite = () => {
-    console.log(selectedWorkspace?._id)
+    console.log(selectedWorkspace)
     if (inviteEmail) {
       //sending the invite to the email given
       axios.post(`http://localhost:5000/invite/sendinguserinvite/${selectedWorkspace?._id}`, { InviteEmail: inviteEmail }, { withCredentials: true })
@@ -53,40 +63,43 @@ function SendInvite() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div>
+    <div className="flex h-full flex-col w-full">
       {/* Sidebar */}
-      <div className="w-1/4 bg-gray-800 text-white">
+      <div className=" bg-gray-800 text-white w-full absolute left-0 top-0">
         <div className="p-4">
           <h1 className="text-2xl font-bold">Workspaces</h1>
-          <ul className="mt-4">
-            {workspaces.map((workspace, index) => (
-              <li
-                key={index}
-                className={`p-2 rounded-lg cursor-pointer ${selectedWorkspace?.name === workspace.name ? "bg-gray-700" : ""}`}
-                onClick={() => setSelectedWorkspace(workspace)}
-              >
-                {workspace.name}
-              </li>
-            ))}
-          </ul>
           <button
-            className="w-full mt-4 py-2 bg-green-600 rounded-lg hover:bg-green-700"
+            className="w-48 mt-4 py-2 bg-blue-600 rounded-lg hover:bg-green-700"
             onClick={() => navigate("/createworkspace")}
-          >
+          > 
             Create New Workspace
           </button>
+          <div className="mt-4 flex flex-row ">
+            <select className="bg-green-600 p-3 rounded-xl">
+            {workspaces.map((workspace, index) => (
+              <option
+                key={index}
+                className={`p-2 rounded-lg cursor-pointer ${selectedWorkspace?.name === workspace.name ? "bg-gray-700" : ""}`}
+                onClick={() => {setSelectedWorkspace(workspace);console.log(workspace)}}
+              >
+                {workspace.name}
+              </option>
+            ))}
+            </select>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-8 bg-gray-100">
+      <div className="flex-1 p-8 bg-gray-100 absolute left-0 w-full top-44 h-[790px]">
         {selectedWorkspace ? (
           <>
-            <h2 className="text-3xl font-bold mb-4">{selectedWorkspace.name}</h2>
+            <h2 className="text-3xl font-bold mb-4 relative t">{selectedWorkspace.name}</h2>
             <p className="text-lg mb-4">{selectedWorkspace.description}</p>
 
             <div className="mb-8">
-              <h3 className="text-2xl font-semibold">Channels</h3>
+              <h3 className="text-2xl font-semibold">Invite a new person</h3>
               <ul className="mt-2">
                 {/*
                    //optional getting all the general chats
@@ -99,8 +112,9 @@ function SendInvite() {
                 }
               </ul>
             </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            
+            <div className="w-full justify-center items-center flex flex-col">
+            <div className="bg-white p-6 rounded-lg shadow-md w-96">
               <h3 className="text-2xl font-semibold mb-4">Invite Users</h3>
               <input
                 type="email"
@@ -117,6 +131,26 @@ function SendInvite() {
                 Send Invite
               </button>
             </div>
+            <div className="m-10">
+              <button 
+                className="bg-blue-950 text-slate-200 p-3 rounded-xl" 
+                  onClick={()=>(
+                    dispatch(Workspaceselected({
+                      wname:selectedWorkspace.name,
+                      wadmin:selectedWorkspace.createdByname,
+                      members:selectedWorkspace.member,
+                      genchats:selectedWorkspace.genchats,
+                      pchats:selectedWorkspace.pchats
+                      }))
+                    )}
+                  >
+                   Visit your workspace
+              </button>
+            </div>
+            <div className="w-[1294px]">
+            <Footer/>
+            </div>
+            </div>
           </>
         ) : (
           <div className="flex justify-center items-center h-full">
@@ -124,6 +158,7 @@ function SendInvite() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }

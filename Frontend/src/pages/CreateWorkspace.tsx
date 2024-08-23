@@ -14,7 +14,7 @@ function CreateWorkspace() {
     });
     
     const [isempty,setisempty] = useState<Boolean>(false)
-
+     
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -29,7 +29,7 @@ function CreateWorkspace() {
         if(!isempty){
             console.log(formData);
             await axios.post("http://localhost:5000/channel/createchannel",formData,{withCredentials: true}).then((result:any) => {
-                console.log(result)
+                console.log(result.data.NewChannel)
                 navigate("/sendinvite");
             }).catch((err:any) => {
                 console.log(err.message)

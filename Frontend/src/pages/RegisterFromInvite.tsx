@@ -63,6 +63,7 @@ const Registerfrominvite = () => {
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "Registration failed");
+      console.log(err.response)
     }
   };
 

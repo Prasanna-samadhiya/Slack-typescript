@@ -28,6 +28,7 @@ const CreateChannel = async (req: AuthenticatedRequest, res: Response) => {
     name: name,
     description: description || "",
     createdBy: authUser._id,
+    createdByname: authUser.username
   });
 
   if (!NewChannel) {
@@ -37,6 +38,7 @@ const CreateChannel = async (req: AuthenticatedRequest, res: Response) => {
   NodeMailer("prasannasamadhiya02@gmail.com",authUser.email,"Channel Created",`Your channel ${NewChannel.name} was created`) 
 
   authUser.channels.push(NewChannel._id);
+  authUser.partof.push(NewChannel.id);
   await authUser.save();
 
   return res.status(201).json({
@@ -85,6 +87,7 @@ const deleteChannel = async (req: AuthenticatedRequest, res: Response, next: Nex
 
     if (index !== -1) {
       loggedInUser.channels.splice(index, 1);
+      loggedInUser.partof.splice(index,1);
       await loggedInUser.save();
     }
 

@@ -8,6 +8,7 @@ interface IChannel extends mongoose.Document {
     description?: string;
     members: mongoose.Types.ObjectId[];
     createdBy: mongoose.Types.ObjectId;
+    createdByname: string;
     generalchats: string[];
     privatechats: string[];
     createdAt: Date;
@@ -32,6 +33,11 @@ const ChannelSchema = new mongoose.Schema<IChannel>({
         ref: 'User',
         required: true,
     },
+    createdByname:{
+        type: String,
+        required: true
+    }
+    ,
     generalchats:[ {
 
         type: String,

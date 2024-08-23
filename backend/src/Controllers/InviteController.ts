@@ -66,7 +66,7 @@ const verifyInviteToken = async (token: string): Promise<IInvite | null> => {
   };
   
 
-  const registerUser = async (token: string, userDetails: any): Promise<void> => {
+  const registerUser = async (token: string, userDetails: any,channel:any): Promise<void> => {
     //using the verify token which returns invite from model
     const invite = await verifyInviteToken(token);
   
@@ -77,8 +77,9 @@ const verifyInviteToken = async (token: string): Promise<IInvite | null> => {
         email: invite.email,
         ...userDetails
       });
-  
+      newUser.partof?.push(channel._id)
       await newUser.save();
+      
   
       // Optionally, delete the invite after successful registration
       await Invite.deleteOne({ _id: invite._id });
@@ -125,9 +126,7 @@ const RegisterUserWithInvite = async (req: Request, res: Response): Promise<void
     console.log(invite)
     // Register the user
     const channel = await channelModel.findById(invite?.channelid)
-    console.log(channel)
-    await registerUser(token as string, { username, email: invite?.email, password });
-
+    await registerUser(token as string, { username, email: invite?.email, password},channel);
     res.status(200).json({success:true, message: 'User registered successfully' ,channel});
   } catch (error:any) {
     res.status(400).json({ success:false, message: error.message });
