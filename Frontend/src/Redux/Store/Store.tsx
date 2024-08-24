@@ -2,7 +2,7 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import UserReducer from '../Reducers/UserReducer/UserReducer'
 import storage from 'redux-persist/lib/storage'
 import { persistReducer, persistStore } from 'redux-persist'
-import { Workspaceselected } from '../Reducers/WorkspaceReducer/WorkspaceReducer'
+import  Workspaceselected  from '../Reducers/WorkspaceReducer/WorkspaceReducer'
 
 const persistConfig = {
     key: 'root',
@@ -12,8 +12,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
     auth: persistReducer(persistConfig, UserReducer),
     wosp: persistReducer(persistConfig, Workspaceselected)
-    
-  })
+})
 
 
 const store = configureStore({ reducer:rootReducer });

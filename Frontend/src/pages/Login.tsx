@@ -42,7 +42,7 @@ function Login() {
             await axios.post("http://localhost:5000/user/login",formData,{withCredentials: true}).then((result:any) => {
                 console.log(result)
                 dispatch(loggedinSuccess({name:result.data.user.username,email:result.data.user.email}))
-                navigate("/createworkspace"); 
+                navigate("/sendinvite"); 
                 } ).catch((err:any) => {
                 console.log(err)
                 });

@@ -2,18 +2,19 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate} from "react-router-dom";
 import Footer from "../CreatedComponents/Footer/Footer";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Workspaceselected } from "../Redux/Reducers/WorkspaceReducer/WorkspaceReducer";
+import { Authstate } from "../CreatedComponents/Private Route/PrivateRoute";
 
 //interface of the workspace creates
 interface Workspace {
   name: string;
   description: string;
   createdByname: string;
-  member: string[];
-  genchats: string[];
+  members: string[];
+  generalchats: string[];
   //channel here signifies chats
-  pchats: string[];
+  privatechats: string[];
   channels: string[];
   _id: string;
 }
@@ -30,12 +31,16 @@ function SendInvite() {
   const navigate = useNavigate();
   
 
+  
+  const user=useSelector((state:Authstate)=>state?.auth?.details?.name)
+  console.log(user)
+
   useEffect(() => {
     // Fetch workspaces from the backend
     axios.get("http://localhost:5000/channel/allchannels", { withCredentials: true })
       .then((response) => {
-        console.log(response.data.channels)
-        setWorkspaces(response.data.channels);
+        setWorkspaces(response.data.channels.filter((ele:any)=>ele.createdByname==user));
+        console.log(workspaces)
         setSelectedWorkspace(response.data.channels[0]); // Default to the first workspace
       })
       .catch((error) => {
@@ -45,8 +50,11 @@ function SendInvite() {
           navigate("/login");
         }
       });
+
+     
   }, [navigate]);
 
+  
   const handleInvite = () => {
     console.log(selectedWorkspace)
     if (inviteEmail) {
@@ -76,6 +84,7 @@ function SendInvite() {
             Create New Workspace
           </button>
           <div className="mt-4 flex flex-row ">
+            {workspaces.length?
             <select className="bg-green-600 p-3 rounded-xl">
             {workspaces.map((workspace, index) => (
               <option
@@ -87,6 +96,9 @@ function SendInvite() {
               </option>
             ))}
             </select>
+            :
+            <div className="bg-green-600 p-3 rounded-xl">No workspaces</div>
+            }  
           </div>
         </div>
       </div>
@@ -134,20 +146,22 @@ function SendInvite() {
             <div className="m-10">
               <button 
                 className="bg-blue-950 text-slate-200 p-3 rounded-xl" 
-                  onClick={()=>(
-                    dispatch(Workspaceselected({
-                      wname:selectedWorkspace.name,
-                      wadmin:selectedWorkspace.createdByname,
-                      members:selectedWorkspace.member,
-                      genchats:selectedWorkspace.genchats,
-                      pchats:selectedWorkspace.pchats
-                      }))
-                    )}
+                  onClick={()=>{
+                      console.log("hi",selectedWorkspace);
+                      dispatch(Workspaceselected({
+                        wname:selectedWorkspace.name,
+                        wadmin:selectedWorkspace.createdByname,
+                        members:[...selectedWorkspace.members],
+                        genchats:[...selectedWorkspace.generalchats],
+                        pchats:[...selectedWorkspace.privatechats]
+                        }))
+                      navigate("/workspacehome")
+                  }}
                   >
                    Visit your workspace
               </button>
             </div>
-            <div className="w-[1294px]">
+            <div className="w-[1900px]">
             <Footer/>
             </div>
             </div>

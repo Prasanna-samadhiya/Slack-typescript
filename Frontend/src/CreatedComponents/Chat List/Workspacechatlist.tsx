@@ -6,20 +6,24 @@ interface Props {
     Workspacename: string;
     Workspaceadmin: string;
     Genchats: string[];
+    Penchats: string[];
     Members: string[];
 }
 
 function Workspacechatlist(props: Props) {
-    const {Workspacename,Workspaceadmin,Genchats,Members} = props
-    const [selectedWorkspace,setselectedWorkspace] = useState<string>("")
+    const {Workspacename,Workspaceadmin,Genchats,Members,Penchats} = props
+    const [showchat,setshowchat] = useState<Boolean>(false)
+    const [showgen,setshowgen] = useState<Boolean>(false)
+    const [showpen,setshowpen] = useState<Boolean>(false)
+    // const [showdm,setshowdm] = useState<Boolean>(false)
 
     return (
         <div>
-            <div className=" bg-indigo-900 text-purple-lighter flex-none w-64 pb-6 hidden md:block h-full p-2">
+            <div className=" bg-indigo-800 text-purple-lighter flex-none w-64 pb-6 hidden md:block h-full p-2">
         <div className="text-white mb-2 mt-3 px-4 flex justify-between">
             <div className="flex-auto">
                 <h1 className="font-semibold text-xl leading-tight mb-1 truncate">{Workspacename}</h1>
-                <div className="flex items-center mb-6">
+                <div className="flex items-center mb-6 p-3">
                     <svg className="h-2 w-2 fill-current text-green mr-2" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10"/></svg>
                     <span className="text-white opacity-50 text-sm">{Workspaceadmin}</span>
                 </div>
@@ -30,30 +34,34 @@ function Workspacechatlist(props: Props) {
                 </svg>
             </div>
         </div>
-        <div className="mb-8">
-            <div className="px-4 mb-2 text-white flex justify-between items-center">
-                <div className="opacity-75">Channels</div>
+        <div className="mb-8 flex justify-evenly flex-col">
+            <div className="px-4 text-white flex justify-between items-center flex-col mb-8">
+                <div className="opacity-75 text-xl cursor-pointer relative hover:bg-indigo-900 w-[253px]" onClick={()=>(setshowchat(!showchat))}>Chats</div>
+                {showchat?
                 <div>
-                    <svg className="fill-current h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" />
-                    </svg>
-                </div>
-            </div>
             {/* displaying all the chats */}
+            <div className="my-3">
+                <div onClick={()=>{setshowgen(!showgen)}} className="cursor-pointer hover:bg-indigo-900 w-[253px]">General Chats</div>
             {
-                Genchats.map((name:string)=>{
+                showgen?Genchats.map((name:string)=>{
                     return <Chatsname chatname={name}/>
-                })
+                }):null
             }
+            </div>
+            <div className="my-3">
+                <div onClick={()=>{setshowpen(!showpen)}} className="cursor-pointer hover:bg-indigo-900 w-[253px]">Private Chats</div>
+            {
+                showpen?Penchats.map((name:string)=>{
+                    return <Chatsname chatname={name}/>
+                }):null
+            }   
+            </div>
+            </div>:null}
         </div>
-        <div className="mb-8">
-            <div className="px-4 mb-2 text-white flex justify-between items-center">
-                <div className="opacity-75">Direct Messages</div>
-                <div>
-                    <svg className="fill-current h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" />
-                    </svg>
-                </div>
+        <div className="mb-8 flex flex-col">
+            <div className="mb-2 text-white flex justify-between items-center">
+                <div className="opacity-75 text-xl px-6 cursor-pointer hover:bg-indigo-900 w-[265px]">Direct Messages</div>
+                
             </div>
             {
                 Members.map((name:string)=>{
@@ -62,16 +70,12 @@ function Workspacechatlist(props: Props) {
             }
         </div>
         <div>
-            <div className="px-4 mb-2 text-white flex justify-between items-center">
-                <div className="opacity-75">Apps</div>
-                <div>
-                    <svg className="fill-current h-4 w-4 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path d="M11 9h4v2h-4v4H9v-4H5V9h4V5h2v4zm-1 11a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16z" />
-                    </svg>
-                </div>
+            <div className=" mb-2 text-white">
+                <div className="opacity-75 text-xl cursor-pointer hover:bg-indigo-900 w-[248px]">Apps</div>
             </div>
         </div>
     </div>
+        </div>
         </div>
     )
 }

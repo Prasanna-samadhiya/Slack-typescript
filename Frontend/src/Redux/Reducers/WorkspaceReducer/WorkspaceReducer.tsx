@@ -25,6 +25,7 @@ const WorkspaceSlice=createSlice({
     initialState,
     reducers:{
          Workspaceselected(state,action){
+             console.log(action.payload)
              state.wname=action.payload.wname;
              state.wadmin=action.payload.wadmin;
              state.members=action.payload.members;

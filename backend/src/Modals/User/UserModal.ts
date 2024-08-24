@@ -46,14 +46,11 @@ const UserSchema = new mongoose.Schema<IUser>({
     ]
     ,
     generalcreated:[ {
-
-            type: String
+          type: String
         }
     ],
     privatecreated:[ {
-
-        type: String
-
+          type: String
         }
     ],
     DM:[{
