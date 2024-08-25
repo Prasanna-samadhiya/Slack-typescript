@@ -9,6 +9,7 @@ const Messagerouter=require("./Routes/MessageRoute")
 const Userrouter=require("./Routes/UserRoute")
 const Channelrouter=require("./Routes/ChannelRoute")
 const Inviterouter=require("./Routes/InviteRoutes")
+const Genrouter=require("./Routes/GenchatRoute")
 
 const dotenv=require("dotenv")
 const cors=require("cors")
@@ -37,6 +38,7 @@ DBconnect()
 app.use("/user",Userrouter)
 app.use("/channel",Channelrouter)
 app.use("/invite",Inviterouter)
+app.use("/gchat",Genrouter)
 app.use("/message",Messagerouter(wss))
 
 //starting the websocket connection

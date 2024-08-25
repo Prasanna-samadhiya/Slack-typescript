@@ -5,7 +5,7 @@ function Footer(props: Props) {
 
     return (
         <div>
-                <div className="bg-gray-900 text-white pt-12 pb-8 px-4">
+                <div className="bg-purple-900 text-white pt-12 pb-8 px-4">
             <div className="mx-auto px-4 container overflow-hidden flex flex-col lg:flex-row justify-between">
                 <a href="/" className="block mr-4 w-1/3">
                     <img src="https://a.slack-edge.com/3d92b39/marketing/img/nav/slack-salesforce-logo-nav-white@2x.png" className="w-40 ml-4 lg:ml-0" alt="logo"/>
