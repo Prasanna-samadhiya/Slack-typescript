@@ -164,4 +164,15 @@ const GetAllchannels=async(req:Request,res:Response,next:NextFunction)=>{
   
 }
 
-module.exports = { CreateChannel, deleteChannel ,UpdateChannel,GetAllchannels};
+const Setchannel=async(req:Request,res:Response)=>{
+   const {id} = req.params
+   if(!id){
+      return ErrorHandler(res,"id not given",401)
+   }
+   const channel=await channelModel.findById(id);
+   if(!channel){
+    return ErrorHandler(res,"channel not found",404)
+   }
+   res.status(201).json({success:true,message:"channel added for future use"})
+}
+module.exports = { CreateChannel, deleteChannel ,UpdateChannel,GetAllchannels,Setchannel};

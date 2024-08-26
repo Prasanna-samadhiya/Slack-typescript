@@ -1,6 +1,10 @@
 import { useState } from "react";
 import Chatsname from "./Chatsname";
 import Membername from "./Membername";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import * as React from "react";
+import axios from "axios";
 
 interface Props {
     Workspacename: string;
@@ -15,8 +19,42 @@ function Workspacechatlist(props: Props) {
     const [showchat,setshowchat] = useState<Boolean>(false)
     const [showgen,setshowgen] = useState<Boolean>(false)
     const [showpen,setshowpen] = useState<Boolean>(false)
+    const [showgform,setshowgform] = useState<Boolean>(true)
+    const [showpform,setshowpform] = useState<Boolean>(true)
+    const [gform,setgform] = useState({
+        name:"",
+        description:""
+    })
+    const [pform,setpform] = useState({
+        name:"",
+        description:""
+    })
     // const [showdm,setshowdm] = useState<Boolean>(false)
+    const handlegchat=async()=>{
+        setshowgform(false);
+        await axios.post("http://localhost:5000/gchat/creategchat",gform).then((result)=>{
+           console.log(result.data)
+        }).catch((err)=>{
+            console.log(err.response.data)
+        })
+    }
+    
+    const handlepchat=async()=>{
+        setshowpform(false);
+        await axios.post("http://localhost:5000/gchat/creategchat",pform).then((result)=>{
+           console.log(result.data)
+        }).catch((err)=>{
+            console.log(err.response.data)
+        })
+    }
 
+    const handlegchange=(e:React.ChangeEvent<HTMLInputElement>)=>{
+         setgform({...gform,[e.target.name]:e.target.value})
+    }
+    
+    const handlepchange=(e:React.ChangeEvent<HTMLInputElement>)=>{
+        setpform({...pform,[e.target.name]:e.target.value})
+   }
     return (
         <div>
             <div className=" bg-indigo-800 text-purple-lighter flex-none w-64 pb-6 hidden md:block h-full p-2">
@@ -41,7 +79,22 @@ function Workspacechatlist(props: Props) {
                 <div>
             {/* displaying all the chats */}
             <div className="my-3">
-                <div onClick={()=>{setshowgen(!showgen)}} className="cursor-pointer hover:bg-indigo-900 w-[253px]">General Chats</div>
+                <div onClick={()=>{setshowgen(!showgen)}} className="cursor-pointer hover:bg-indigo-900 w-[253px]">
+                    General Chats
+                    <FontAwesomeIcon icon={faPlus} onClick={()=>{setshowgform(!showgform)}} className="px-2 "/>
+                </div>
+                {
+                    showgform?
+                    <div className="absolute top-[30%] left-[45%] bg-violet-600 px-16 rounded-xl">
+                     <div>
+                        <div className="relative top-0 bg-red-700 w-full round px-10 rounded-lg text-xl py-2">Create General chat</div>
+                        <div>name:</div><input type="text" className="m-2 h-10 text-black" name="name" onChange={handlegchange}></input>
+                       
+                        <div>description:</div><input type="text" className="m-2 h-10 text-black" name="description" onChange={handlegchange}></input>
+                        <div><button className="bg-green-600 p-3 rounded-xl my-4" onClick={handlegchat}>Create chat</button></div>
+                     </div>
+                    </div>:null
+                }
             {
                 showgen?Genchats.map((name:string)=>{
                     return <Chatsname chatname={name}/>
@@ -49,7 +102,22 @@ function Workspacechatlist(props: Props) {
             }
             </div>
             <div className="my-3">
-                <div onClick={()=>{setshowpen(!showpen)}} className="cursor-pointer hover:bg-indigo-900 w-[253px]">Private Chats</div>
+                <div onClick={()=>{setshowpen(!showpen)}} className="cursor-pointer hover:bg-indigo-900 w-[253px]">
+                    Private Chats
+                    <FontAwesomeIcon icon={faPlus} onClick={()=>{console.log("hi")}} className="px-2"/>
+                </div>
+                {
+                    showpform?
+                    <div className="absolute top-[30%] left-[45%] bg-violet-600 px-16 rounded-xl">
+                     <div>
+                        <div className="relative top-0 bg-red-700 w-full round px-10 rounded-lg text-xl py-2">Create Private chat</div>
+                        <div>name:</div><input type="text" className="m-2 h-10 text-black" name="name" onChange={handlepchange}></input>
+                       
+                        <div>description:</div><input type="text" className="m-2 h-10 text-black" name="description" onChange={handlepchange}></input>
+                        <div><button className="bg-green-600 p-3 rounded-xl my-4" onClick={handlepchat}>Create chat</button></div>
+                     </div>
+                    </div>:null
+                }
             {
                 showpen?Penchats.map((name:string)=>{
                     return <Chatsname chatname={name}/>

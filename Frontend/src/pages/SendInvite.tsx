@@ -146,7 +146,7 @@ function SendInvite() {
             <div className="m-10">
               <button 
                 className="bg-blue-950 text-slate-200 p-3 rounded-xl" 
-                  onClick={()=>{
+                  onClick={async()=>{
                       console.log("hi",selectedWorkspace);
                       dispatch(Workspaceselected({
                         wname:selectedWorkspace.name,
@@ -155,6 +155,7 @@ function SendInvite() {
                         genchats:[...selectedWorkspace.generalchats],
                         pchats:[...selectedWorkspace.privatechats]
                         }))
+                      axios.get("")
                       navigate("/workspacehome")
                   }}
                   >
