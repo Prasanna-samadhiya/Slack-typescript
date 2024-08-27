@@ -2,7 +2,7 @@ import { useState } from "react";
 import Chatsname from "./Chatsname";
 import Membername from "./Membername";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
 import axios from "axios";
 
@@ -19,8 +19,10 @@ function Workspacechatlist(props: Props) {
     const [showchat,setshowchat] = useState<Boolean>(false)
     const [showgen,setshowgen] = useState<Boolean>(false)
     const [showpen,setshowpen] = useState<Boolean>(false)
-    const [showgform,setshowgform] = useState<Boolean>(true)
-    const [showpform,setshowpform] = useState<Boolean>(true)
+    const [showgform,setshowgform] = useState<Boolean>(false)
+    const [showpform,setshowpform] = useState<Boolean>(false)
+    const [showpmem,setshowpmem] = useState<Boolean>(false)
+    const [pallow,setpallow] = useState<string[]>([])
     const [gform,setgform] = useState({
         name:"",
         description:""
@@ -30,19 +32,23 @@ function Workspacechatlist(props: Props) {
         description:""
     })
     // const [showdm,setshowdm] = useState<Boolean>(false)
+    
     const handlegchat=async()=>{
         setshowgform(false);
-        await axios.post("http://localhost:5000/gchat/creategchat",gform).then((result)=>{
+        await axios.post("http://localhost:5000/gchat/creategchat",{...gform,channelname:Workspacename},{withCredentials:true}).then((result)=>{
            console.log(result.data)
+           Genchats.push(result.data.gchat.name)
         }).catch((err)=>{
             console.log(err.response.data)
         })
     }
     
     const handlepchat=async()=>{
-        setshowpform(false);
-        await axios.post("http://localhost:5000/gchat/creategchat",pform).then((result)=>{
-           console.log(result.data)
+        await axios.post("http://localhost:5000/pchat/createpchat",{name:pform.name,description:pform.description,channelname:Workspacename,allowedmembers:pallow},{withCredentials:true}).then((result)=>{
+           console.log(result.data);
+           Penchats.push(result.data.pchat.name);
+           setshowpform(false);
+           setpallow([])
         }).catch((err)=>{
             console.log(err.response.data)
         })
@@ -85,7 +91,7 @@ function Workspacechatlist(props: Props) {
                 </div>
                 {
                     showgform?
-                    <div className="absolute top-[30%] left-[45%] bg-violet-600 px-16 rounded-xl">
+                    <div id="Gform" className="absolute top-[30%] left-[45%] bg-violet-600 px-16 rounded-xl" >
                      <div>
                         <div className="relative top-0 bg-red-700 w-full round px-10 rounded-lg text-xl py-2">Create General chat</div>
                         <div>name:</div><input type="text" className="m-2 h-10 text-black" name="name" onChange={handlegchange}></input>
@@ -102,19 +108,51 @@ function Workspacechatlist(props: Props) {
             }
             </div>
             <div className="my-3">
-                <div onClick={()=>{setshowpen(!showpen)}} className="cursor-pointer hover:bg-indigo-900 w-[253px]">
-                    Private Chats
-                    <FontAwesomeIcon icon={faPlus} onClick={()=>{console.log("hi")}} className="px-2"/>
+                <div className="cursor-pointer hover:bg-indigo-900 w-[253px] flex flex-row px-16">
+                    <div onClick={()=>setshowpen(!showpen)}>Private Chats</div>
+                    <FontAwesomeIcon icon={faPlus} onClick={()=>{setshowpform(!showpform)}} className="px-2 py-1"/>
                 </div>
                 {
                     showpform?
-                    <div className="absolute top-[30%] left-[45%] bg-violet-600 px-16 rounded-xl">
+                    <div id="Pform" className="absolute top-[30%] left-[45%] bg-violet-600 px-16 rounded-xl h-96">
                      <div>
                         <div className="relative top-0 bg-red-700 w-full round px-10 rounded-lg text-xl py-2">Create Private chat</div>
                         <div>name:</div><input type="text" className="m-2 h-10 text-black" name="name" onChange={handlepchange}></input>
                        
                         <div>description:</div><input type="text" className="m-2 h-10 text-black" name="description" onChange={handlepchange}></input>
                         <div><button className="bg-green-600 p-3 rounded-xl my-4" onClick={handlepchat}>Create chat</button></div>
+                   </div>
+                     <div>
+                        <select className="bg-green-600 p-1 px-2 rounded-lg">
+                            {
+                                Members.map((ele:string)=>{
+                                    return <option onClick={()=>{
+                                        console.log("hk")
+                                        setshowpmem(true)
+                                        if(!pallow.includes(ele)){
+                                           setpallow([...pallow,ele])
+                                        }
+                                        console.log(pallow)
+                                    }}>{ele}</option>
+                                })
+                            }
+                        </select>
+                        <div className="flex flex-row flex-wrap">
+                        {
+                                showpmem?
+                                 pallow.map((ele:string,index)=>{
+                                    return <div className="flex flex-row bg-green-600 w-24 m-2 p-1 rounded-lg">
+                                           <div className="bg-green-600">{ele}</div>
+                                           <FontAwesomeIcon className="p-1"icon={faXmark} onClick={()=>{
+                                            console.log("batao")
+                                            const pallow1=[...pallow]
+                                           pallow1.splice(index,1)
+                                           setpallow(pallow1)
+                                           }}/>
+                                           </div>
+                                 }):null
+                            }
+                        </div>
                      </div>
                     </div>:null
                 }

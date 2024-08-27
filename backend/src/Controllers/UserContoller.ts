@@ -14,8 +14,8 @@ interface AuthenticatedRequest extends Request {
 }
 
 const Authentication = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  const { my_token } = req.cookies;
-  const authtoken = my_token;
+  const { myslacktoken } = req.cookies;
+  const authtoken = myslacktoken;
   console.log("token:",authtoken)
   if (!authtoken) {
     return next(UndefinedHandler(res,"User not logged in yet",401))
@@ -40,10 +40,8 @@ const UserRegister = async (req: AuthenticatedRequest, res: Response,next:NextFu
     const result = await userModel.create({ username, fullname, email, password });
     NodeMailer("prasannasamadhiya02@gmail.com",result.email,"Account Created","Great to have you onboard on our software")
     req.user=result
-    console.log(req.user)
     return res.status(201).json({message:"Registered successfully",result})
   } catch (err) {
-    console.log(err);
     next(UndefinedHandler(res,"Server Error",500));
   }
 };
@@ -71,14 +69,13 @@ const UserLogin = async (req: Request, res: Response,next:NextFunction) => {
     const token = jwt.sign(payload, process.env.SECRET as string, { expiresIn: 86400 });
 
     return res
-      .cookie("my_token", token, { httpOnly: true, maxAge: 2 * 60 * 60 * 1000 }) // 2 hours
+      .cookie("myslacktoken", token, { httpOnly: true, maxAge: 2 * 60 * 60 * 1000 }) // 2 hours
       .status(200)
       .json({
         message: "Logged in successfully",
         user: result,
       });
   } catch (err) {
-    console.log(err);
     next(UndefinedHandler(res,"Server Error",500));
   }
 };

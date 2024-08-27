@@ -41,14 +41,13 @@ const ChannelSchema = new mongoose.Schema<IChannel>({
     generalchats:[ {
 
         type: String,
-        unique: true
+        default:""
         }
     ],
     privatechats:[ {
 
     type: String,
-    unique: true
-
+    default:""
         }
     ],
     createdAt: {

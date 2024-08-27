@@ -8,6 +8,7 @@ function Register(props: Props) {
     const {} = props
     const [email,setemail]=useState<string>("")
     const navigate = useNavigate();
+    console.log(email)
     return (
         <div>
          
@@ -33,7 +34,10 @@ function Register(props: Props) {
         </div>
         <div className='flex justify-center items-center flex-col'>
             <div className='border-4 m-4 w-[400px] p-3 rounded-xl hover:bg-slate-200' onClick={()=>{navigate("/register2")}}>Continue with registration</div>
-            <div className='border-4 m-4 w-[400px] p-3 rounded-xl hover:bg-slate-200' >Continue with Google</div>
+            <div className='border-4 m-4 w-[400px] p-3 rounded-xl hover:bg-slate-200 ' >
+                
+                   <div>Continue with Google</div>
+                </div>
         </div>
 
         <div className='text-slate-500 text-lg m-3'>

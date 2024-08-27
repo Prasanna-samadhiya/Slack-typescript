@@ -33,7 +33,8 @@ function SendInvite() {
 
   
   const user=useSelector((state:Authstate)=>state?.auth?.details?.name)
-  console.log(user)
+  const user1=useSelector((state:Authstate)=>state?.auth?.details)
+  console.log(user1)
 
   useEffect(() => {
     // Fetch workspaces from the backend

@@ -20,11 +20,13 @@
   },
   "homepage": "https://github.com/Prasanna-samadhiya/Slack#readme",
   "dependencies": {
+    "axios": "^1.7.5",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "googleapis": "^142.0.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.5.3",
     "nodemailer": "^6.9.14",
@@ -32,6 +34,7 @@
     "socket.io": "^4.7.5",
     "typescript": "^5.5.4",
     "uuid": "^10.0.0",
+    "validator": "^13.12.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {

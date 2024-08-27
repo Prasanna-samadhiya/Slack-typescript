@@ -7,13 +7,13 @@ const channelModel = require('../Modals/Channel/ChannelModal');
 //creating a interface to add the req.user which is not possible at Request type
 interface AuthenticatedRequest extends Request {
     user?: any;
-    channel?: any;
   }
 
 
 const CreateGchat=async(req:AuthenticatedRequest,res:Response)=>{
      try{
         const user = req.user;
+        console.log("user:",user)
         if (!user) {
         return ErrorHandler(res,"Not logged in yet",403);
         }
