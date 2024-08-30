@@ -38,7 +38,7 @@ function SendInvite() {
 
   useEffect(() => {
     // Fetch workspaces from the backend
-    axios.get("http://localhost:5000/channel/allchannels", { withCredentials: true })
+    axios.get("http://localhost:5000/channel/allchannels")
       .then((response) => {
         setWorkspaces(response.data.channels.filter((ele:any)=>ele.createdByname==user));
         console.log(workspaces)

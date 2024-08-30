@@ -2,6 +2,7 @@
 import { Application } from "express"
 //importing websocket
 import WebSocket, { Server as WebSocketServer } from 'ws';
+import { configureGoogleOAuth } from "./Utilities/AuthConfig";
 
 const express=require("express")
 //requiring different routers
@@ -58,6 +59,9 @@ wss.on('connection', (ws) => {
       console.log('A user disconnected');
     });
   });
+
+
+configureGoogleOAuth(app);
 
 app.listen(process.env.PORT,()=>{
     console.log('listening to 5000')

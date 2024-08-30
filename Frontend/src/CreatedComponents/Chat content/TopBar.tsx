@@ -1,10 +1,9 @@
 interface Props {
     chatname: string;
-    description: string;
 }
 
 function TopBar(props: Props) {
-    const {chatname,description} = props
+    const {chatname} = props
 
     return (
         <div>
@@ -12,7 +11,7 @@ function TopBar(props: Props) {
             <div className="flex flex-col">
                 <h3 className="text-grey-darkest mb-1 font-extrabold text-2xl">{chatname}</h3>
                 <div className="text-grey-dark text-sm truncate">
-                    {description}
+                    
                 </div>
             </div>
             <div className="ml-auto hidden md:block">

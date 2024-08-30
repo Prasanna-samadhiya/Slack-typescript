@@ -35,10 +35,19 @@ const WorkspaceSlice=createSlice({
              state.chatdes=action.payload.chatdes;
              console.log(current(state))
              return state
+         },
+         Generalchatadded(state,action){
+            console.log(action.payload);
+            state.genchats.push(action.payload);
+            return state;
+         },Privatechatadded(state,action){
+            console.log(action.payload);
+            state.pchats.push(action.payload);
+            return state;
          }
     }
    })
 
-export const {Workspaceselected}=WorkspaceSlice.actions
+export const {Workspaceselected,Generalchatadded,Privatechatadded}=WorkspaceSlice.actions
 
 export default WorkspaceSlice.reducer;

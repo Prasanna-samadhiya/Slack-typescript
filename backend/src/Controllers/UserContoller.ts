@@ -67,7 +67,7 @@ const UserLogin = async (req: Request, res: Response,next:NextFunction) => {
     };
 
     const token = jwt.sign(payload, process.env.SECRET as string, { expiresIn: 86400 });
-
+    
     return res
       .cookie("myslacktoken", token, { httpOnly: true, maxAge: 2 * 60 * 60 * 1000 }) // 2 hours
       .status(200)
@@ -123,4 +123,27 @@ const DeleteUser=async(req:Request,res:Response)=>{
   }
 }
 
-module.exports = { UserRegister, UserLogin, GetAllUsers, Authentication ,DeleteUser};
+const RegisterwithEmail=(req:Request,res:Response)=>{
+  try{
+    const {email,name,channel} =req.body;
+  const password=Math.floor(Math. random() * (9999 - 1000 + 1)) + 1000;
+  const isuser=userModel.findOne({name:email})
+  if(isuser){
+    return ErrorHandler(res,"User alredy exist try login",403)
+  }
+  const user=userModel.create({
+    name:name,
+    email:email,
+    password:password,
+    partof:[channel]
+  })
+  if(!user){
+    return ErrorHandler(res,"User cannot be created",500)
+  }
+  return res.status(201).json({success:true,message:"User created successfully",user,password})
+  }catch(err){
+    return UndefinedHandler(res,"Undefined Problems",500)
+  }
+}
+
+module.exports = { UserRegister, UserLogin, GetAllUsers, Authentication ,DeleteUser,RegisterwithEmail};

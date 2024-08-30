@@ -1,5 +1,5 @@
 const express=require("express")
-const { fetchMessages ,createMessage,deleteMessage} = require("../Controllers/MessageController")
+const { fetchMessages ,createMessage,deleteMessage,Getspecificchat} = require("../Controllers/MessageController")
 import WebSocket from 'ws';
 
 const router=express.Router()
@@ -11,6 +11,8 @@ module.exports = function(wss: WebSocket.Server) {
     router.get('/fetchMessages', fetchMessages);
 
     router.delete('/deleteMessage/:id', deleteMessage);
+
+    router.post('/specificchat',Getspecificchat)
   
     return router;
   };

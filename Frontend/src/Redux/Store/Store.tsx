@@ -3,6 +3,7 @@ import UserReducer from '../Reducers/UserReducer/UserReducer'
 import storage from 'redux-persist/lib/storage'
 import { persistReducer, persistStore } from 'redux-persist'
 import  Workspaceselected  from '../Reducers/WorkspaceReducer/WorkspaceReducer'
+import ChatReducer from "../Reducers/ChatReducer/chatreducer"
 
 const persistConfig = {
     key: 'root',
@@ -11,7 +12,8 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
     auth: persistReducer(persistConfig, UserReducer),
-    wosp: persistReducer(persistConfig, Workspaceselected)
+    wosp: persistReducer(persistConfig, Workspaceselected),
+    chat: persistReducer(persistConfig, ChatReducer)
 })
 
 

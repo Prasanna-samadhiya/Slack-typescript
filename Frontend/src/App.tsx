@@ -2,6 +2,7 @@
 import { Routes,Route } from '../node_modules/react-router-dom/dist/index'
 import './App.css'
 import PrivateRoute from './CreatedComponents/Private Route/PrivateRoute'
+import Root from './googleauth/auth'
 import CreateWorkspace from './pages/CreateWorkspace'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -23,12 +24,12 @@ function App() {
         <Route path="/register" element={<Register/>}></Route>
         <Route path="/register2" element={<Register2/>}></Route>
         <Route path="/login" element={<Login/>}></Route>
+        <Route path="/googleauth" element={<Root/>}></Route>
         <Route path="/registerfrominvite" element={<Registerfrominvite/>}></Route>
         <Route element={<PrivateRoute/>}>
         <Route path="/workspacehome" element={<WorkspaceHome/>}></Route>
         <Route path="/sendinvite" element={<SendInvite/>}></Route>
         <Route path="/createworkspace" element={<CreateWorkspace/>}></Route>
-        
         </Route>
       </Routes>
     </>

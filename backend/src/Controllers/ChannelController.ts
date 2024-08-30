@@ -153,15 +153,21 @@ const GetAllchannels=async(req:Request,res:Response,next:NextFunction)=>{
   
     const channels=await channelModel.find();
 
-    if (!channels || channels.length === 0) {
-      return ErrorHandler(res,"No users found",401);
-    }
 
     res.status(201).json({
       success:true,
       channels
     })
   
+}
+
+const specificchannel=async(req:Request,res:Response)=>{
+  const {name} = req.body;
+  const channel = await channelModel.findOne({name:name})
+  if(!channel){
+    return ErrorHandler(res,"Workspace not found",201)
+  }
+  return res.status(201).json({success:true,channel})
 }
 
 const Setchannel=async(req:Request,res:Response)=>{
@@ -175,4 +181,4 @@ const Setchannel=async(req:Request,res:Response)=>{
    }
    res.status(201).json({success:true,message:"channel added for future use"})
 }
-module.exports = { CreateChannel, deleteChannel ,UpdateChannel,GetAllchannels,Setchannel};
+module.exports = { CreateChannel, deleteChannel ,UpdateChannel,GetAllchannels,Setchannel,specificchannel};

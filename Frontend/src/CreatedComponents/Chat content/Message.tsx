@@ -1,3 +1,5 @@
+import parse from "html-react-parser"
+
 interface Props {
     sender: string;
     time: string;
@@ -8,7 +10,7 @@ function Message(props: Props) {
     const {sender,time,content} = props
 
     return (
-        <div className="my-4 w-96">
+        <div className="my-4 w-fit h-[100px]">
         <div className="flex items-start text-sm">
             <img 
                 src="https://twitter.com/steveschoger/profile_image" 
@@ -20,8 +22,8 @@ function Message(props: Props) {
                     <span className="font-semibold text-gray-900">{sender}</span>
                     <span className="text-gray-500 text-xs">{time}</span>
                 </div>
-                <div className="text-gray-800 leading-relaxed mx-16">
-                    {content}
+                <div className="text-gray-800 leading-relaxed mx-16 mt-4">
+                    {parse(content)}
                 </div>
             </div>
         </div>

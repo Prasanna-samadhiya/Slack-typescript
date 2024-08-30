@@ -84,7 +84,7 @@ const Home: React.FC = () => (
 
 // Wrap App component with GoogleOAuthProvider
 const Root: React.FC = () => (
-  <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_CLIENT_ID || ''}>
+  <GoogleOAuthProvider clientId={"402609058071-g7tqs925b4f7r662eni6mvlemcc71a2r.apps.googleusercontent.com"}>
     <App />
   </GoogleOAuthProvider>
 );

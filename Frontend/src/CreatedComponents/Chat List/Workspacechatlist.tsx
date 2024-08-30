@@ -5,6 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import * as React from "react";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { Generalchatadded, Privatechatadded } from "../../Redux/Reducers/WorkspaceReducer/WorkspaceReducer";
 
 interface Props {
     Workspacename: string;
@@ -15,7 +17,7 @@ interface Props {
 }
 
 function Workspacechatlist(props: Props) {
-    const {Workspacename,Workspaceadmin,Genchats,Members,Penchats} = props
+    let {Workspacename,Workspaceadmin,Genchats,Members,Penchats} = props
     const [showchat,setshowchat] = useState<Boolean>(false)
     const [showgen,setshowgen] = useState<Boolean>(false)
     const [showpen,setshowpen] = useState<Boolean>(false)
@@ -33,11 +35,31 @@ function Workspacechatlist(props: Props) {
     })
     // const [showdm,setshowdm] = useState<Boolean>(false)
     
+    Members=["member1","member2","member3","member4"]
+    const dispatch=useDispatch();
+
+    React.useEffect(()=>{
+        const specificworkspace=async()=>{
+           await axios.post("http://localhost:5000/channel/specificchannel",{name:Workspacename}).then(
+            (response)=>{
+                console.log(response.data.channel.generalchats)
+                Genchats=[...response.data.channel.generalchats];
+                Penchats=[...response.data.channel.privatechats]
+            }
+           ).catch((err)=>{
+            console.log(err.response)
+           })
+        }
+
+        specificworkspace();
+    },[])
+
     const handlegchat=async()=>{
         setshowgform(false);
         await axios.post("http://localhost:5000/gchat/creategchat",{...gform,channelname:Workspacename},{withCredentials:true}).then((result)=>{
            console.log(result.data)
            Genchats.push(result.data.gchat.name)
+           dispatch(Generalchatadded(result.data.gchat.name))
         }).catch((err)=>{
             console.log(err.response.data)
         })
@@ -47,6 +69,7 @@ function Workspacechatlist(props: Props) {
         await axios.post("http://localhost:5000/pchat/createpchat",{name:pform.name,description:pform.description,channelname:Workspacename,allowedmembers:pallow},{withCredentials:true}).then((result)=>{
            console.log(result.data);
            Penchats.push(result.data.pchat.name);
+           dispatch(Privatechatadded(result.data.pchat.name))
            setshowpform(false);
            setpallow([])
         }).catch((err)=>{

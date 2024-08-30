@@ -16,14 +16,22 @@ interface WOState{
     }
 }
 
+interface Chat{
+    chat:{
+        chatname:string;
+    }
+}
+
 interface Props {}
 
 function WorkspaceHome(props: Props) {
     const {} = props
     const user=useSelector((state:Authstate)=>state.auth)
     const workspace=useSelector((state:WOState)=>state.wosp)
+    const chat=useSelector((state:Chat)=>state.chat.chatname)
     console.log(user.workspaces)
     console.log(workspace)
+    console.log(chat)
     const members:string[]=[...workspace.members]
     const genchats:string[]=[...workspace.genchats]
     const penchats:string[]=[...workspace.pchats] 
@@ -37,7 +45,7 @@ function WorkspaceHome(props: Props) {
                 {/* Chat List */}
                 <Workspacechatlist Workspacename={Workspacename} Workspaceadmin={Workspaceadmin} Members={members} Genchats={genchats} Penchats={penchats}/>
                 {/* Chat content */}
-                <Workspacechatcontent chatname="Clicked chat" description="chat Description"/>
+                <Workspacechatcontent chatname={chat}/>
             </div>
     )
 }

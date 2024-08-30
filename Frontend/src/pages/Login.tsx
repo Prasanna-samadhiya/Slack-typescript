@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios"
 import { useDispatch } from "react-redux";
 import { loggedinSuccess } from "../Redux/Reducers/UserReducer/UserReducer";
+import Navbar from "../CreatedComponents/Navbar/Navbar";
+import Footer from "../CreatedComponents/Footer/Footer";
 
 interface LoginFormData {
     email: string;
@@ -44,7 +46,7 @@ function Login() {
                 dispatch(loggedinSuccess({name:result.data.user.username,email:result.data.user.email}))
                 navigate("/sendinvite"); 
                 } ).catch((err:any) => {
-                console.log(err)
+                console.log(err.response)
                 });
             
         }else{
@@ -54,7 +56,9 @@ function Login() {
     };
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-100">
+        <div className="absolute left-0 top-0 w-full">
+        <Navbar/>
+        <div className="flex justify-center items-center h-[550px] bg-gray-100">
             <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-xl shadow-md">
                 <h1 className="text-3xl font-bold text-center">Login</h1>
                 <div className="space-y-4">
@@ -94,6 +98,8 @@ function Login() {
                     </span>
                 </div>
             </div>
+        </div>
+        <Footer/>
         </div>
     );
 }

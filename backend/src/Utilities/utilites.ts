@@ -50,4 +50,7 @@ const NodeMailer=(from:string,to:string,subject:string,text:string)=>{
       });
 }
 
+
+
+
 export { CorrectHandler, ErrorHandler, UndefinedHandler, NodeMailer };

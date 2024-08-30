@@ -3,46 +3,89 @@ import http from 'http';
 import WebSocket from 'ws';
 import mongoose from 'mongoose';
 import Message from '../Modals/Messages/MessageModal'; // Import your Message model
+import Gchat from "../Modals/GeneralChats/generalchatsmodal";
+import Pchat from "../Modals/PrivateChats/privatechatsmodal";
+import { ErrorHandler } from '../Utilities/utilites';
 
 const app: Application = express();
 
 
 
 // Controller to create a new message
+// const createMessage = (wss: WebSocket.Server) => async (req: Request, res: Response) => {
+//   try {
+//     const { sender, receiver, content, isDM ,isPrivate} = req.body;
+
+//     // Validate request data
+//     if (!sender || !receiver || !content) {
+//       return res.status(400).json({ error: 'Missing required fields' });
+//     }
+
+    
+//     // Create and save the new message
+//     const message = new Message({
+//       sender,
+//       receiver,
+//       content,
+//       isDM,
+//       isPrivate
+//     });
+
+//     const savedMessage = await message.save();
+    
+//     // Broadcast the new message to all connected clients
+//     wss.clients.forEach((client) => {
+//       if (client.readyState === WebSocket.OPEN) {
+//         client.send(JSON.stringify({ type: 'newMessage', data: savedMessage }));
+//       }
+//     });
+
+//     res.status(201).json(savedMessage);
+//   } catch (error:any) {
+//     console.error('Error creating message:', error);
+//     res.status(500).json({ error: 'Failed to create message' });
+//   }
+// };
+
+
 const createMessage = (wss: WebSocket.Server) => async (req: Request, res: Response) => {
-  try {
-    const { sender, receiver, content, isDM ,isPrivate} = req.body;
-
-    // Validate request data
-    if (!sender || !receiver || !content) {
-      return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    
-    // Create and save the new message
-    const message = new Message({
-      sender,
-      receiver,
-      content,
-      isDM,
-      isPrivate
-    });
-
-    const savedMessage = await message.save();
-    
-    // Broadcast the new message to all connected clients
-    wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify({ type: 'newMessage', data: savedMessage }));
+    try {
+      const { sender, content,chatname} = req.body;
+      const genchat=await Gchat.findOne({name:chatname})
+      
+      if(!genchat){
+        const penchat=await Pchat.findOne({name:chatname})
+        console.log("penchat",penchat)
+        if(!penchat){
+          return ErrorHandler(res,"Sender not found",401);
+        }
+        penchat.messages.push({sender:sender,avatar:"",content:content})
+        penchat.save();
+        return res.status(201).json({success:true,penchat})
       }
-    });
-
-    res.status(201).json(savedMessage);
-  } catch (error:any) {
-    console.error('Error creating message:', error);
-    res.status(500).json({ error: 'Failed to create message' });
-  }
-};
+      genchat.messages.push({sender:sender,avatar:"",content:content})
+      genchat.save();
+      
+      // Validate request data
+      if (!sender || !content) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+  
+      
+      
+      // Broadcast the new message to all connected clients
+      wss.clients.forEach((client) => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: 'newMessage', data: content }));
+        }
+      });
+  
+      res.status(201).json(genchat);
+    } catch (error:any) {
+      console.error('Error creating message:', error);
+      res.status(500).json({ error: 'Failed to create message' });
+    }
+  };
 
 // Controller to fetch messages
 const fetchMessages = async (req: Request, res: Response) => {
@@ -94,4 +137,30 @@ const deleteMessage = (wss: WebSocket.Server)=>async (req: Request, res: Respons
     res.status(500).json({ error: 'Failed to delete message' });
   }
 };
-module.exports={fetchMessages,createMessage ,deleteMessage}
+
+const Getspecificchat = async(req:Request,res:Response)=>{
+    
+    try {
+      const {chatname} = req.body;
+      console.log(chatname)
+      const genchat=await Gchat.findOne({name:chatname})
+      
+      if(!genchat){
+        const penchat=await Pchat.findOne({name:chatname})
+        if(!penchat){
+          return ErrorHandler(res,"Sender not found",401);
+        }
+        return res.status(201).json({success:true,chat:penchat})
+      }
+      // Validate request data
+      if (!chatname) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+      res.status(201).json({success:true,chat:genchat});
+    } catch (error:any) {
+      console.error('Error creating message:', error);
+      res.status(500).json({ error: 'Failed to create message' });
+    }
+}
+
+module.exports={fetchMessages,createMessage ,deleteMessage,Getspecificchat}

@@ -1,4 +1,5 @@
-import { useState } from "react"
+import axios from "axios";
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom";
 
 
@@ -7,11 +8,51 @@ interface Props {}
 function Register(props: Props) {
     const {} = props
     const [email,setemail]=useState<string>("")
+    const [organisation,setorganisation]=useState<string>("")
+    const [workspaces,setworkspaces]=useState([])
     const navigate = useNavigate();
     console.log(email)
+
+    const RegisterwithEmail=async()=>{
+        axios.post("",{name:"",email:email,channel:organisation},{withCredentials:true})
+    }
+
+    const CheckIfPresent=()=>{
+        workspaces.map((ele:any)=>{
+        if(ele.name==organisation){
+            console.log("found")
+            RegisterwithEmail()
+        }else{
+            console.log("not found ")
+        }
+        })
+    }
+
+    const handleclick=()=>{
+        const result=email.split("@")[1]
+        setorganisation(result.split("gmail")[0])
+        console.log(organisation)
+        console.log(workspaces)
+        CheckIfPresent()
+    }
+
+    
+
+    useEffect(()=>{
+         const getworkspace=async()=>{
+            await axios.get("http://localhost:5000/channel/allchannels", { withCredentials: true })
+        .then((response) => {
+          setworkspaces(response.data.channels);
+        })
+        .catch((error) => {
+          console.log(error.message);
+          
+        });
+         }
+        getworkspace()
+    },[])
     return (
         <div>
-         
         <div className='text-3xl font-bold m-12'>
             Slack
         </div>
@@ -26,7 +67,7 @@ function Register(props: Props) {
 
         <div className='flex flex-col w-[470px] ml-96'>
           <input type='email' className='rounded-xl h-12 w-[470px] my-8 p-2 border-2' placeholder='name@work-email.com' onChange={(e)=>{setemail(e.target.value)}}/>
-          <button className='bg-violet-950 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl h-12'>Continue</button>
+          <button className='bg-violet-950 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl h-12'onClick={handleclick}>Continue</button>
         </div>
         
         <div className='text-xl m-10'>
