@@ -39,8 +39,21 @@ const UserRegister = async (req: AuthenticatedRequest, res: Response,next:NextFu
     const { username, fullname, email, password } = req.body;
     const result = await userModel.create({ username, fullname, email, password });
     NodeMailer("prasannasamadhiya02@gmail.com",result.email,"Account Created","Great to have you onboard on our software")
-    req.user=result
-    return res.status(201).json({message:"Registered successfully",result})
+    req.user=result;
+    const payload = {
+      id: result._id,
+      name: result.username,
+    };
+
+    const token = jwt.sign(payload, process.env.SECRET as string, { expiresIn: 86400 });
+    
+    return res
+      .cookie("myslacktoken", token, { httpOnly: true, maxAge: 2 * 60 * 60 * 1000 }) // 2 hours
+      .status(200)
+      .json({
+        message: "User Registered successfully",
+        user: result,
+      });
   } catch (err) {
     next(UndefinedHandler(res,"Server Error",500));
   }
@@ -146,4 +159,28 @@ const RegisterwithEmail=(req:Request,res:Response)=>{
   }
 }
 
-module.exports = { UserRegister, UserLogin, GetAllUsers, Authentication ,DeleteUser,RegisterwithEmail};
+const GetUserpartof = async(req:Request,res:Response) =>{
+  try{
+     const {name} = req.body;
+     if(!name){
+      return ErrorHandler(res,"User name is not given",401)
+     }
+     const channles:any = []
+     const user = await userModel.findOne({username:name});
+     user.partof.map(async(ele:string)=>{
+        const c= await channelModel.findById(ele);
+        console.log(c)
+        if(!c){
+          return ErrorHandler(res,"channel not found",404)
+        }
+        channles.push(c)
+        
+     })
+     const user1 = await userModel.findOne({username:name});
+     return res.status(201).json({success:true,channels:channles})
+  }catch(err){
+    UndefinedHandler(res,"Undefined err",500)
+  }
+}
+
+module.exports = { UserRegister, UserLogin, GetAllUsers, Authentication ,DeleteUser,RegisterwithEmail,GetUserpartof};
