@@ -91,6 +91,7 @@ function Workspacechatcontent(props: Props) {
     //         "content":"content5"
     //     }
     // ]
+    
 
     useEffect(()=>{
       const getchat=()=>{
@@ -103,7 +104,7 @@ function Workspacechatcontent(props: Props) {
             })
       }
       getchat()
-    },[chatname])
+    },[chatname,Message1])
 
     return (
         <div className="w-full">
@@ -115,7 +116,7 @@ function Workspacechatcontent(props: Props) {
             {/* <!-- All message --> */}
             {
                 Message1?Message1.map((ele)=>{
-                    return <Message sender={ele.sender} time={Date.now().toString()} content={ele.content}/>
+                    return <Message sender={ele.sender} time={ele.time} content={ele.content}/>
                 }):<div>Post a messages</div>
             }
         </div>

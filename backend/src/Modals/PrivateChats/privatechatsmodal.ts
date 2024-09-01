@@ -9,6 +9,7 @@ interface Pchat extends Document {
     sender:string;
     avatar:string;
     content:string;
+    time:string;
   }[]
 }
 
@@ -32,6 +33,9 @@ const PchatSchema = new Schema<Pchat>({
         },
         content:{
             type:String
+        },
+        time:{
+          type:String
         }
     }
   ]

@@ -50,20 +50,20 @@ const app: Application = express();
 
 const createMessage = (wss: WebSocket.Server) => async (req: Request, res: Response) => {
     try {
-      const { sender, content,chatname} = req.body;
+      const { sender, content,chatname,time} = req.body;
       const genchat=await Gchat.findOne({name:chatname})
-      
+      const date = new Date();
       if(!genchat){
         const penchat=await Pchat.findOne({name:chatname})
         console.log("penchat",penchat)
         if(!penchat){
           return ErrorHandler(res,"Sender not found",401);
         }
-        penchat.messages.push({sender:sender,avatar:"",content:content})
+        penchat.messages.push({sender:sender,avatar:"",content:content,time:time})
         penchat.save();
         return res.status(201).json({success:true,penchat})
       }
-      genchat.messages.push({sender:sender,avatar:"",content:content})
+      genchat.messages.push({sender:sender,avatar:"",content:content,time:time})
       genchat.save();
       
       // Validate request data

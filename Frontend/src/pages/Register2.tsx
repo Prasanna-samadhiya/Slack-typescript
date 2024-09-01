@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Footer from "../CreatedComponents/Footer/Footer";
 import Navbar from "../CreatedComponents/Navbar/Navbar";
+import { loggedinSuccess } from "../Redux/Reducers/UserReducer/UserReducer";
+import { useDispatch } from "react-redux";
 
 interface RegisterFormData {
     username: string;
@@ -20,6 +22,7 @@ function Register() {
     });
     const [isequal, setIsequal] = useState<boolean>(false);
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -38,7 +41,8 @@ function Register() {
             try {
                 const result = await axios.post("http://localhost:5000/user/register", formData);
                 console.log(result);
-                navigate("/login");
+                dispatch(loggedinSuccess({name:result.data.user.username,email:result.data.user.email}))
+                navigate("/sendinvite");
             } catch (err: any) {
                 console.log(err.response.data);
             }
@@ -128,7 +132,8 @@ function Register() {
                         <div className="text-center text-sm text-gray-600">
                             Already have an account?{" "}
                             <span
-                                onClick={() => navigate("/login")}
+                                onClick={() => 
+                                    navigate("/login")}
                                 className="text-pink-600 underline cursor-pointer"
                             >
                                 Sign in

@@ -86,7 +86,7 @@ function Login() {
                     onClick={handleSubmit}
                     className="w-full py-3 text-white bg-violet-950 rounded-lg hover:bg-blue-700"
                 >
-                    Register
+                    Login
                 </button>
                 <div className="text-center text-sm text-gray-500">
                     Already have an organisation email?{" "}

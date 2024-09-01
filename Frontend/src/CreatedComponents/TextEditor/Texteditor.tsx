@@ -11,23 +11,25 @@ interface Props {
 function RichTextEditor(props:Props) {
   const {chatname} = props;
   const [editorValue, setEditorValue] = useState('');
-  const user=useSelector(state=>state.auth.details.name)
+  const user=useSelector((state)=>state.auth.details.name)
   console.log(user)
   const handleChange = (value:any) => {
     setEditorValue(value);
     
   };
+  
 
   const handleclick = () =>{
     console.log("hi")
-    axios.post("http://localhost:5000/message/createMessage",{chatname:chatname,sender:user,content:editorValue},{withCredentials:true}).
+    axios.post("http://localhost:5000/message/createMessage",{chatname:chatname,sender:user,content:editorValue,time:date.toLocaleString()},{withCredentials:true}).
     then((response)=>{
         console.log(response.data)
+        setEditorValue("")
     }).catch((err)=>{
         console.log(err)
     })
   }
-
+  const date=new Date();
 
   return (
     <div className="p-4 bg-white shadow-md rounded-xl">

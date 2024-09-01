@@ -8,7 +8,6 @@ interface Props {
 
 function Message(props: Props) {
     const {sender,time,content} = props
-
     return (
         <div className="my-4 w-fit h-[100px]">
         <div className="flex items-start text-sm">

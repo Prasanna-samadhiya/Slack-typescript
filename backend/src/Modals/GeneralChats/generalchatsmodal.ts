@@ -8,6 +8,7 @@ interface Gchat extends Document {
     sender:string;
     avatar:string;
     content:string;
+    time:string;
   }[]
 }
 
@@ -24,6 +25,8 @@ const GchatSchema = new Schema<Gchat>({
             type:String
         },
         content:{
+            type:String
+        },time:{
             type:String
         }
     }

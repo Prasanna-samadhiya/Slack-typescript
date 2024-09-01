@@ -166,18 +166,9 @@ const GetUserpartof = async(req:Request,res:Response) =>{
       return ErrorHandler(res,"User name is not given",401)
      }
      const channles:any = []
-     const user = await userModel.findOne({username:name});
-     user.partof.map(async(ele:string)=>{
-        const c= await channelModel.findById(ele);
-        console.log(c)
-        if(!c){
-          return ErrorHandler(res,"channel not found",404)
-        }
-        channles.push(c)
-        
-     })
-     const user1 = await userModel.findOne({username:name});
-     return res.status(201).json({success:true,channels:channles})
+     const user = await userModel.findOne({username:name}).populate("partof");
+  
+     return res.status(201).json({success:true,channels:user.partof})
   }catch(err){
     UndefinedHandler(res,"Undefined err",500)
   }

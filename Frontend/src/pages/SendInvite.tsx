@@ -38,19 +38,26 @@ function SendInvite() {
 
   useEffect(() => {
     // Fetch workspaces from the backend
-    axios.get("http://localhost:5000/channel/allchannels")
+    const postuser =async()=>{
+      await axios.post("http://localhost:5000/user/getpartof",{name:user})
       .then((response) => {
-        setWorkspaces(response.data.channels.filter((ele:any)=>ele.createdByname==user));
-        console.log(workspaces)
-        setSelectedWorkspace(response.data.channels[0]); // Default to the first workspace
+        // setWorkspaces(response.data.channels.filter((ele:any)=>ele.createdByname==user));
+        setWorkspaces(response.data.channels)
+        if(workspaces.length){
+          setSelectedWorkspace(response.data.channels[0]);
+        }
+        
+         // Default to the first workspace
       })
       .catch((error) => {
-        console.log(error.message);
+        console.log(error.response.data);
         // Handle not logged in scenario
         if (error.response.status === 401) {
           navigate("/login");
         }
       });
+    }
+    postuser();
 
      
   }, [navigate]);
@@ -170,7 +177,8 @@ function SendInvite() {
           </>
         ) : (
           <div className="flex justify-center items-center h-full">
-            <p className="text-xl">Select a workspace to view details</p>
+            <p className="text-7xl relative bottom-40 ">Create a workspace to view details</p>
+            <div className="absolute bottom-0 w-full "><Footer/></div>
           </div>
         )}
       </div>
