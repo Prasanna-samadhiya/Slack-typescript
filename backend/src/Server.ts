@@ -1,5 +1,5 @@
 //exploring type from express for app
-import { Application } from "express"
+import { Application, Response ,Request} from "express"
 //importing websocket
 import WebSocket, { Server as WebSocketServer } from 'ws';
 
@@ -20,8 +20,6 @@ const DBconnect = require("./Config/Config")
 
 const http=require('http')
 const app: Application = express();
-const server = http.createServer(app);
-const wss = new WebSocketServer({ server:server });
 
 dotenv.config()
 
@@ -35,30 +33,47 @@ app.use(cookieParser())
 
 //using the database connection fuction
 DBconnect()
-
 app.use("/user",Userrouter)
 app.use("/channel",Channelrouter)
 app.use("/invite",Inviterouter)
 app.use("/gchat",Genrouter)
 app.use("/pchat",Penrouter)
-app.use("/message",Messagerouter(wss))
-
-//starting the websocket connection
-wss.on('connection', (ws) => {
-    console.log('A user connected');
-  
-    // Handle incoming messages from clients
-    ws.on('message', (message) => {
-      console.log('Received:', message);
-    });
-  
-    ws.on('close', () => {
-      console.log('A user disconnected');
-    });
-  });
 
 
 
-app.listen(process.env.PORT,()=>{
+app.get("/",(req:Request,res:Response)=>{
+  return res.send("hi");
+})
+
+const server=app.listen(process.env.PORT,()=>{
     console.log('listening to 5000')
 })
+
+const wss = new WebSocketServer({ server });
+const clients = new Set();
+//starting the websocket connection
+wss.on('connection', (ws) => {
+  // Function to broadcast a message to all connected clients
+  function broadcast(message:any,sender:any) {
+    for (const client of clients) {
+      console.log(client,sender==client)
+      if (client !== sender && client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    }
+  }
+  console.log('A user connected');
+  clients.add(ws);
+
+  // Handle incoming messages from clients
+  ws.on('message', (message) => {
+    console.log('Received:', message.toString());
+    // Broadcast the message to all connected clients
+    broadcast(message,ws);
+  });
+
+  ws.on('close', () => {
+    console.log('A user disconnected');
+  });
+});
+app.use("/message",Messagerouter(wss))

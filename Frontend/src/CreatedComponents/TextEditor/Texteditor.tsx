@@ -5,31 +5,48 @@ import 'react-quill/dist/quill.snow.css'; // Import the CSS for Quill
 import { useSelector } from 'react-redux';
 
 interface Props {
-    chatname:string;
+    chatname: string;
+    ws: WebSocket | null; // Add WebSocket as a prop
 }
 
-function RichTextEditor(props:Props) {
-  const {chatname} = props;
+function RichTextEditor(props: Props) {
+  const { chatname, ws } = props;
   const [editorValue, setEditorValue] = useState('');
-  const user=useSelector((state)=>state.auth.details.name)
-  console.log(user)
-  const handleChange = (value:any) => {
-    setEditorValue(value);
-    
-  };
-  
+  const user = useSelector((state: any) => state.auth.details.name);
+  console.log(user);
 
-  const handleclick = () =>{
-    console.log("hi")
-    axios.post("http://localhost:5000/message/createMessage",{chatname:chatname,sender:user,content:editorValue,time:date.toLocaleString()},{withCredentials:true}).
-    then((response)=>{
-        console.log(response.data)
-        setEditorValue("")
-    }).catch((err)=>{
-        console.log(err)
+  const handleChange = (value: string) => {
+    setEditorValue(value);
+  };
+
+  const handleclick = () => {
+    console.log("hi");
+    const date = new Date();
+
+    axios.post("http://localhost:5000/message/createMessage", {
+      chatname: chatname,
+      sender: user,
+      content: editorValue,
+      time: date.toLocaleString()
+    }, { withCredentials: true })
+    .then((response) => {
+      console.log(response.data);
+      setEditorValue("");
+      // Send the message via WebSocket
+      if (ws) {
+        const message = {
+          chatname,
+          sender: user,
+          content: editorValue,
+          time: date.toLocaleString()
+        };
+        ws.send(JSON.stringify(message));
+      }
     })
-  }
-  const date=new Date();
+    .catch((err) => {
+      console.log(err);
+    });
+  };
 
   return (
     <div className="p-4 bg-white shadow-md rounded-xl">
