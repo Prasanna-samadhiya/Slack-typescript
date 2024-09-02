@@ -1,4 +1,5 @@
-import parse from "html-react-parser"
+import parse from "html-react-parser";
+import { useSelector } from "react-redux";
 
 interface Props {
     sender: string;
@@ -6,29 +7,40 @@ interface Props {
     content: string;
 }
 
-function Message(props: Props) {
-    const {sender,time,content} = props
+function Message({ sender, time, content }: Props) {
+    const user = useSelector((state: any) => state.auth.details.name);
+
+    // Determine alignment based on sender
+    const isUserMessage = sender === user;
+
+    // Dynamic profile image (for example purposes, update as needed)
+
     return (
-        <div className="my-4 w-fit h-[100px]">
-        <div className="flex items-start text-sm">
-            <img 
-                src="https://twitter.com/steveschoger/profile_image" 
-                alt={sender.charAt(0)} 
-                className="w-16 h-16 rounded-full mr-4 shadow-lg"
-            />
-            <div className="flex-1 bg-white  rounded-lg shadow-md flex flex-row">
-                <div className="flex justify-between items-center  flex-col bg-slate-300 p-3">
-                    <span className="font-semibold text-gray-900">{sender}</span>
-                    <span className="text-gray-500 text-xs">{time}</span>
-                </div>
-                <div className="text-gray-800 leading-relaxed mx-16 mt-4">
-                    {parse(content)}
+        <div className={`my-4 w-full h-[100px] ${isUserMessage ? "flex justify-start" : "flex justify-end"}`}>
+            <div className={`flex items-start text-sm `}>
+                {/* Profile image */}
+                <img 
+                    src=""
+                    alt= {sender[0]} 
+                    className="w-16 h-16 rounded-full mr-4 shadow-lg"
+                />
+
+                {/* Message container */}
+                <div className={`flex-1 rounded-lg shadow-md flex flex-col ${isUserMessage ? "bg-blue-500 text-white" : "bg-white text-gray-800"}`}>
+                    <div className="flex flex-row">
+                    <div className={`flex justify-between items-center p-3 flex-col ${isUserMessage ? "bg-blue-600" : "bg-slate-300"}`}>
+                        <span className="font-semibold">{sender}</span>
+                        
+                    </div>
+                    <div className="leading-relaxed mx-4 mt-2 text-xl">
+                        {parse(content)}
+                    </div>
+                    </div>
+                    <span className={`text-xs ${isUserMessage ? "bg-blue-600" : "bg-slate-300"}`}>{time}</span>
                 </div>
             </div>
         </div>
-    </div>
-    
-    )
+    );
 }
 
-export default Message
+export default Message;

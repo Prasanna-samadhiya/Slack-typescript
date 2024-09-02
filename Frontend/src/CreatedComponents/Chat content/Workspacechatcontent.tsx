@@ -91,20 +91,29 @@ function Workspacechatcontent(props: Props) {
     //         "content":"content5"
     //     }
     // ]
-    
+     
+    const getchat=()=>{
+        axios.post("http://localhost:5000/message/specificchat",{chatname:chatname}).then(
+          (response)=>{
+              console.log(response.data.chat.messages)
+              setMessage1([...response.data.chat.messages])
+          }).catch((err)=>{
+              console.log(err.response.data)
+          })
+    }
+
+
 
     useEffect(()=>{
-      const getchat=()=>{
-          axios.post("http://localhost:5000/message/specificchat",{chatname:chatname}).then(
-            (response)=>{
-                console.log(response.data.chat.messages)
-                setMessage1(response.data.chat.messages)
-            }).catch((err)=>{
-                console.log(err.response.data)
-            })
-      }
+      
       getchat()
-    },[chatname,Message1])
+    //   const intervalId = setInterval(() => {
+    //     getchat();
+    // }, 1000); // Adjust the interval time as needed
+
+    // // Clean up the interval on component unmount
+    // return () => clearInterval(intervalId);
+    },[chatname])
 
     return (
         <div className="w-full">
@@ -126,7 +135,7 @@ function Workspacechatcontent(props: Props) {
                     <svg className="fill-current h-6 w-6 block" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M16 10c0 .553-.048 1-.601 1H11v4.399c0 .552-.447.601-1 .601-.553 0-1-.049-1-.601V11H4.601C4.049 11 4 10.553 4 10c0-.553.049-1 .601-1H9V4.601C9 4.048 9.447 4 10 4c.553 0 1 .048 1 .601V9h4.399c.553 0 .601.447.601 1z"/></svg>
                   </span>
                 {/* <input type="text" className="w-full px-4" placeholder={"Message in "+chatname}/> */}
-                <RichTextEditor chatname={chatname}/>
+                <RichTextEditor chatname={chatname} />
             </div>
         </div>
     </div>

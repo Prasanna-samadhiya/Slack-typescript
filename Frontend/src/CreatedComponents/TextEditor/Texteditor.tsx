@@ -5,7 +5,7 @@ import 'react-quill/dist/quill.snow.css'; // Import the CSS for Quill
 import { useSelector } from 'react-redux';
 
 interface Props {
-    chatname:string
+    chatname:string;
 }
 
 function RichTextEditor(props:Props) {

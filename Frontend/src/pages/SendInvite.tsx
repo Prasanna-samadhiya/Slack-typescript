@@ -27,6 +27,7 @@ function SendInvite() {
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(null);
   //holds the invite email
   const [inviteEmail, setInviteEmail] = useState<string>("");
+  const [hi,sethi] = useState<Boolean>(false)
   const dispatch=useDispatch()
   const navigate = useNavigate();
   
@@ -43,10 +44,10 @@ function SendInvite() {
       .then((response) => {
         // setWorkspaces(response.data.channels.filter((ele:any)=>ele.createdByname==user));
         setWorkspaces(response.data.channels)
+        console.log(workspaces)
         if(workspaces.length){
           setSelectedWorkspace(response.data.channels[0]);
         }
-        
          // Default to the first workspace
       })
       .catch((error) => {
@@ -58,9 +59,9 @@ function SendInvite() {
       });
     }
     postuser();
-
-     
-  }, [navigate]);
+    console.log(hi);
+    console.log(selectedWorkspace);
+  }, [hi]);
 
   
   const handleInvite = () => {
@@ -93,7 +94,7 @@ function SendInvite() {
           </button>
           <div className="mt-4 flex flex-row ">
             {workspaces.length?
-            <select className="bg-green-600 p-3 rounded-xl">
+            <select className="bg-green-600 p-3 rounded-xl" onClick={()=>{sethi(true)}}>
             {workspaces.map((workspace, index) => (
               <option
                 key={index}
